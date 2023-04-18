@@ -6,6 +6,10 @@ parans = 0
 atts = {}
 # Added variable to keep track of active property
 active = {}
+# Added variable to keep track of body
+body = {}
+# Added variable to keep track of trace
+trace = {}
 # (defparameter CHANGED-CONS nil)
 changed_cons = []
 # (defparameter CURRENT-PHRASE nil)

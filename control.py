@@ -56,21 +56,35 @@ def consider_lexical_requests():
   if(Global.pool_reqs('lexical_pool')):
     macros.pmsg("Considering Lexical Requests:")
     consider_pool('lexical_pool')
-  #else:
-    #consider_all_requests()
+  else:
+    consider_all_requests()
 
 
 def consider_pool(pool):
   reqs = Global.pool_reqs(pool)
   t = []
-  #if(reqs):
-    #for r in reqs:
-      #if consider(reqs, pool): #not 100% on this
-       # t.append(reqs)
+  if(reqs):
+    for r in reqs:
+      if consider(reqs, pool): #not 100% on this
+        t.append(reqs)
 
-def consider_all_request():
-  if(Global.request_pools()):
-    while(consider_pool(Global.request_pools)):
+def consider(pool, request): #not sure on this entire function
+  Global.new_con = []
+  body = Global.body.get(request, [])
+  tracep =  Global.tracep.get(request, []) #not 100% missing 2nd part 'tracep
+  bindings = Global.bindings.get(request, [])
+  if Global.active.get(request, []):
+    if tracep:
+      macros.pmsg("CONSIDERing active request", "body: ", body)
+      macros.pmsg(" bindings:", bindings)
+
+
+
+
+
+def consider_all_requests():
+  if(Global.request_pools):
+    while(consider_pool(Global.request_pools)): # not sure about this either
       continue
 
 
