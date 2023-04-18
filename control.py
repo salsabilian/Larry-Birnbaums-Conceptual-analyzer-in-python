@@ -77,6 +77,19 @@ def consider(pool, request): #not sure on this entire function
     if tracep:
       macros.pmsg("CONSIDERing active request", "body: ", body)
       macros.pmsg(" bindings:", bindings)
+    for clause in body:
+      res, tstbindings = eval_test(request, clause, bindings)
+      if res:
+        macros.pmsg(request, "has fired")
+        Global.active.pop(request)
+        eval_actions(request, clause, tstbindings, pool)
+    if Global.active.get(request, []) == []:
+      if Global.flagon('no_kill_flag'):
+         Global.remove_flag('no_kill_flag')
+         Global.active[request] = True
+      return True
+    else:
+      return False
 
 
 
