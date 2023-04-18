@@ -30,6 +30,7 @@ def CA(in_=[]):
     print(" rest: ", end="")
     print(Global.sentence)
     clean_up_request_pools()
+    consider_lexical_requests()
     word = get_next_item()
 
 def clean_up_request_pools():
@@ -50,6 +51,27 @@ def live_reqs(pool):
 
 def clean_up_special_pools():
   save_live_reqs('lexical_pool')
+
+def consider_lexical_requests():
+  if(Global.pool_reqs('lexical_pool')):
+    macros.pmsg("Considering Lexical Requests:")
+    consider_pool('lexical_pool')
+  #else:
+    #consider_all_requests()
+
+
+def consider_pool(pool):
+  reqs = Global.pool_reqs(pool)
+  t = []
+  #if(reqs):
+    #for r in reqs:
+      #if consider(reqs, pool): #not 100% on this
+       # t.append(reqs)
+
+def consider_all_request():
+  if(Global.request_pools()):
+    while(consider_pool(Global.request_pools)):
+      continue
 
 
 def get_next_item():
