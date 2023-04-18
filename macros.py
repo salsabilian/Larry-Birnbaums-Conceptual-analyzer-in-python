@@ -21,3 +21,17 @@ def pmsg1(*args):
             print(arg, end="")
         else: # in lisp this would have additional formatting to let us know its a list (but python automatically does that)
             print(arg)
+
+trace_reqs = []
+
+def trace_reqs(*reqs):
+    for wd in reqs:
+        if wd not in trace_reqs: # pushnew checks whether element is there in the list and if not then prepends it to the list
+            trace_reqs.insert(0, wd)
+
+def untrace_reqs(*reqs):
+    if (reqs == None):
+        trace_reqs = []
+    else:
+        for r in reqs:
+            trace_reqs = trace_reqs.remove(r)
