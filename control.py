@@ -38,7 +38,14 @@ def CA(in_=[]):
 def activate_item_requests(wd):
   reqs = make_requests(wd, Global.requests.get(wd, []))
   macros.pmsg("ACTIVATE-ITEM-REQUESTS for word ", wd,": ", reqs)
-  #if(Global.extra_requests or reqs):
+  if(Global.extra_requests or reqs):
+    if(Global.flagon("skip_word_flag")):
+      Global.remove_flag("skip_word_flag")
+    else:
+      Global.extra_requests.append(reqs)
+    result = build_pool(wd, Global.extra_requests)
+    activate_pool(result)
+    Global.extra_requests = []
 
 def make_requests(wd, reqs=[], bindings=[]):
   if(reqs == []):
