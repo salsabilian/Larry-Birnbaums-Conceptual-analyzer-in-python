@@ -47,15 +47,33 @@ def activate_item_requests(wd):
     activate_pool(result)
     Global.extra_requests = []
 
-def make_requests(wd, reqs=[], bindings=[]):
+def make_requests(wd, reqs=[], bindings=[]): #fix this
   if(reqs == []):
     reqs = Global.requests.get(wd, [])
   result = []
   for req in reqs:
     result.append(gen_request(req, wd, bindings))
+  return result
 
 def gen_request(R, wd, bindings=[]):
   reqsym = macros.new_req(wd)
+  #unsure about symbol-value R = R might be the same in python
+  if(R[0] == 'request'):
+    R = R[1:]
+  val = clausify(R)
+  Global.body[reqsym] = val
+  Global.wd[reqsym] = wd
+  Global.bindings[reqsym] = bindings #this is a list maybe should be a dictionary?
+  for form in R:
+    if form[0] == 'clause':
+      break
+    prop = macros.pool_req(form[0])
+    prop.append(form[1:])
+    macros.set_pool_reqs(form[0], prop)
+  Global.active[reqsym] = True
+  return reqsym
+
+
 
 def check_end_np():
   if(Global.flagon("noun_group_flag")):

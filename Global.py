@@ -12,6 +12,10 @@ body = {}
 trace = {}
 # added variable to keep track of requests
 requests = {}
+# Added variable to keep track of reqsym
+reqsym = {}
+# Added variable to keep track of word (changed to wd)
+wd = {}
 # unique id counter for requests we could change this later to something more sophisticated if needed
 uniqueid = 0
 # (defparameter CHANGED-CONS nil)
