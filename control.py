@@ -30,8 +30,29 @@ def CA(in_=[]):
     print(" rest: ", end="")
     print(Global.sentence)
     clean_up_request_pools()
-    consider_lexical_requests()
+    #consider_lexical_requests() Come back to this function
+    check_end_np()
     word = get_next_item()
+
+def check_end_np():
+  if(Global.flagon("noun_group_flag")):
+    end_noun_phrase()
+    Global.remove_flag("noun_group_flag")
+    macros.pmsg( "End of noun group")
+
+def end_noun_phrase():
+  atts = begin_noun_phrase(Global.next_word())
+  if(atts and (("art" in Global.atts and not Global.n_p_record) or
+               ("adj" in Global.atts and "num" in Global.atts and not("noun" in Global.n_p_record) and not("title" in Global.n_p_record) and not("name" in Global.n_p_record)) or
+               ("title" in Global.atts and "noun" in Global.atts and not("name" in Global.n_p_record)) or
+               ("name" in Global.atts and not("noun" in Global.n_p_record)))):
+    Global.n_p_record = Global.atts + list(set(Global.n_p_record) - set(Global.atts)) # not sure about this got it from here: https://stackoverflow.com/questions/1319338/combining-two-lists-and-removing-duplicates-without-removing-duplicates-in-orig
+    return False
+  else:
+    Global.n_p_record = []
+    Global.remove_flag("noun_group_flag")
+    return True
+
 
 def clean_up_request_pools():
   clean_up_special_pools()
@@ -41,7 +62,7 @@ def clean_up_request_pools():
 
 def save_live_reqs(pool):
   for r in Global.pool_reqs(pool):
-    if not(r in Global.active): # not 100% on this
+    if not(r in Global.active): # not sure 100% on this
       Global.remove_pool_reqs(pool, r)
 
 def live_reqs(pool):
@@ -65,8 +86,11 @@ def consider_pool(pool):
   t = []
   if(reqs):
     for r in reqs:
-      if consider(reqs, pool): #not 100% on this
-        t.append(reqs)
+      if consider(reqs, pool): #not sure 100% on this (more certain) (this always has one item so may be easier to return true)
+        t.append(True)
+    return t
+  else:
+    return []
 
 def consider(pool, request): #not sure on this entire function
   Global.new_con = []
@@ -91,14 +115,36 @@ def consider(pool, request): #not sure on this entire function
     else:
       return False
 
+def eval_test(req, cl, bindings): #not sure on this one either
+  bdgs, vars = collect_vars(cl, bindings)
+  tstform = cl['test']
+  bindings = bdgs
+  Global.current_req = req
+  res = []
+  form = [bindings, Global.current_req]
+  form.append(res)
+  form.append(vars)
+  form.append(tstform[:-1])
+  res = tstform[-1]
+  form.append(res) # this definitely seems wrong
+  form.append(bindings)
+  res = form.value
+  bds = None
+  return res, bds
+
+def collect_vars(form, bindings=[]):
+  foundvars = collect_vars1(form, bindings)
+  res = []
+  for s in foundvars:
+    res.append(s[0], s[:1]) # I dont know this seems wrong unsure
+  return foundvars, res
 
 
-
-
-def consider_all_requests():
+def consider_all_requests(): #(fixed uncertainty (I think?))
   if(Global.request_pools):
-    while(consider_pool(Global.request_pools)): # not sure about this either
-      continue
+    for pool in Global.request_pools:
+      if consider_pool(pool).any():
+        break
 
 
 def get_next_item():
