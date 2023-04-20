@@ -10,6 +10,10 @@ active = {}
 body = {}
 # Added variable to keep track of trace
 trace = {}
+# added variable to keep track of requests
+requests = {}
+# unique id counter for requests we could change this later to something more sophisticated if needed
+uniqueid = 0
 # (defparameter CHANGED-CONS nil)
 changed_cons = []
 # (defparameter CURRENT-PHRASE nil)

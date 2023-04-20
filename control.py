@@ -32,7 +32,23 @@ def CA(in_=[]):
     clean_up_request_pools()
     #consider_lexical_requests() Come back to this function
     check_end_np()
+    activate_item_requests(Global.word)
     word = get_next_item()
+
+def activate_item_requests(wd):
+  reqs = make_requests(wd, Global.requests.get(wd, []))
+  macros.pmsg("ACTIVATE-ITEM-REQUESTS for word ", wd,": ", reqs)
+  #if(Global.extra_requests or reqs):
+
+def make_requests(wd, reqs=[], bindings=[]):
+  if(reqs == []):
+    reqs = Global.requests.get(wd, [])
+  result = []
+  for req in reqs:
+    result.append(gen_request(req, wd, bindings))
+
+def gen_request(R, wd, bindings=[]):
+  reqsym = macros.new_req(wd)
 
 def check_end_np():
   if(Global.flagon("noun_group_flag")):

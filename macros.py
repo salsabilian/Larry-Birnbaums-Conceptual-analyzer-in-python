@@ -1,4 +1,5 @@
 #macros.py
+import Global
 
 #(defparameter *pmsg-flags* T) ;; show all msgs if T, else a list of keywords
 
@@ -35,3 +36,9 @@ def untrace_reqs(*reqs):
     else:
         for r in reqs:
             trace_reqs = trace_reqs.remove(r)
+
+def new_req(wd):
+    Global.uniqueid = Global.uniqueid + 1
+    request = "REQ-" + wd + "-" + str(Global.uniqueid)
+    Global.all_reqs.insert(0, request)
+    return Global.all_reqs[0]
