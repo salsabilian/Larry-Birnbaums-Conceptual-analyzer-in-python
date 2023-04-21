@@ -30,9 +30,12 @@ def CA(in_=[]):
     print(" rest: ", end="")
     print(Global.sentence)
     clean_up_request_pools()
-    #consider_lexical_requests() Come back to this function
+    #Come back to this function
+    #consider_lexical_requests() 
     check_end_np()
     activate_item_requests(Global.word)
+    consider_requests()
+    check_begin_np()
     word = get_next_item()
 
 def activate_item_requests(wd):
@@ -183,6 +186,7 @@ def collect_vars(form, bindings=[]):
 
 def consider_all_requests(): #(fixed uncertainty (I think?))
   if(Global.request_pools):
+    macros.pmsg("CONSIDER-ALL-REQUESTS")
     for pool in Global.request_pools:
       if consider_pool(pool).any():
         break
@@ -235,5 +239,42 @@ def find_pos_req(lex, poslist):
     if x in atts:
       atts.remove(x)
   return atts
+
+
+
+
+def check_begin_np():
+  if(not Global.flagon("noun_group_flag")):
+    Global.n_p_records = begin_noun_phrase(Global.next_word)
+    Global.add_flag("noun_group_flag")
+    if Global.changed_cons:
+      macros.pmsg("Begin noun group:")
+
+# def ldiff (l1 l2):
+#   return list(set(l1).symmetric_difference(set(l2)))
+
+#have some doubts on this  
+def consider_latest_requests():
+ #latest_pool = Global.request_pools[0]
+ older_pools = Global.request_pools[1:]
+ #latest_pool = ldiff(Global.request_pools, older_pools[1:])
+ latest_pools = list (set(Global.request_pools).symmetric_difference.set(older_pools[1:]))
+ while any(map(consider_pool, latest_pools)):
+   macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
+
+def consider_requests():
+  if Global.flagon("noun_group_flag"):
+    macros.pmsg("Considering latest requests:")
+    consider_latest_requests()
+  else:
+    consider_all_requests()
+
+def consider_lexical_requests():
+    if Global.pool_reqs('lexical_pool'):
+        macros.pmsg("Considering lexical requests:")
+        consider_pool('lexical_pool')
+    else:
+        # macros.pmsg("No lexical reqs. Moving to consider all requests.")
+        consider_all_requests()
 
 CA('(a small twin-engine plane stuffed with marijuana crashed south of here yesterday)')
