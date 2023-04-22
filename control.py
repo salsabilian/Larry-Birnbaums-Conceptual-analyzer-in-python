@@ -54,7 +54,7 @@ def make_requests(wd, reqs=[], bindings=[]): #fix this
   if(reqs == []):
     reqs = Global.requests.get(wd, [])
   result = []
-  for req in reqs:
+  for req in reqs: #request is generated so I guess req should already have something? debug later with lisp code
     result.append(gen_request(req, wd, bindings))
   return result
 
@@ -186,7 +186,7 @@ def collect_vars(form, bindings=[]):
 
 def consider_all_requests(): #(fixed uncertainty (I think?))
   if(Global.request_pools):
-    macros.pmsg("CONSIDER-ALL-REQUESTS")
+    #macros.pmsg("CONSIDER-ALL-REQUESTS")
     for pool in Global.request_pools:
       if consider_pool(pool).any():
         break
