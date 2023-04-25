@@ -98,7 +98,7 @@ def end_noun_phrase():
     return True
 
 
-def clean_up_request_pools():
+def clean_up_request_pools(): # removes request pools which are no longer active
   clean_up_special_pools()
   for p in Global.request_pools:
     if(live_reqs(p)):
