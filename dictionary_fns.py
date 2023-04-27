@@ -34,13 +34,12 @@ def expand_req(reqform):
         # cons 'REQUEST
         for c in (reqform[1:]):
             if (c[0] in req_props):
-                props.append(c) # where does props come from or do define it (props = [])?
+                props.append(c) # where does props come from or do we define it (props = [])?
             else:
                 clauses.append(c)
             for clause in clauses:
                 acts = expand_sub_reqs(clause[1:])
-
-            
+                
 
 # (defun expand-sub-reqs (acts &aux newacts newsub)
 #   (loop with newacts = acts
@@ -65,8 +64,8 @@ def defterm(word, atts, *reqs):
     for reqform in reqs:
         requests.append(expand_req(reqform))
     # (eval-when (:load-toplevel :execute :compile-toplevel) tells when the code should be evaluated
-    # :execute means the code should be evaluated at runtime
     # :load-toplevel means code should be evaluated when the file is loaded
+    # :execute means the code should be evaluated at runtime
     # :compile-toplevel means code should be evaluated at compile time
     if (word not in Global.defined_words):
         Global.defined_words.insert(0, word)
