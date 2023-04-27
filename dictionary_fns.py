@@ -70,5 +70,5 @@ def defterm(word, atts, *reqs):
     # :compile-toplevel means code should be evaluated at compile time
     if (word not in Global.defined_words):
         Global.defined_words.insert(0, word)
-    Global.atts.add_atts(word, atts)
-    Global.requests.add_atts(word, requests)
+    Global.add_atts(word, atts)
+    # Global.requests.add_atts(word, requests)
