@@ -7,7 +7,7 @@ import macros
 #          ,prop-vals))
 def def_(word, *prop_vals): 
     for k, v in prop_vals: # key-value pairs?
-        k[1:], v[1:] = word[k[0], v[0]] # unsure
+        word[k[0], v[0]] = k[1:], v[1:] # unsure
 
 # (defparameter *req-props* '(trace :trace))
 req_props = Global.trace(trace, []) # not sure
@@ -70,5 +70,5 @@ def defterm(word, atts, *reqs):
     # :compile-toplevel means code should be evaluated at compile time
     if (word not in Global.defined_words):
         Global.defined_words.insert(0, word)
-    Global.add_atts(word, atts)
-    # Global.requests.add_atts(word, requests)
+    Global.add_property(Global.atts, word, atts)
+    Global.add_property(Global.requests, word, requests)

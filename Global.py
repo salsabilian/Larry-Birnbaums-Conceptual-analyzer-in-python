@@ -116,8 +116,8 @@ def remove_flag(flag):
 def add_flag(flag):
     flags.insert(0, flag)
 
-def add_atts(key, val):
-    atts[key] = val
+def add_property(prop, key, val):
+    prop[key] = val
 
 # ;;; This initializes some variables - book-keeping globals containing generated gensyms
 # (defun INIT-CA-VARS ()
