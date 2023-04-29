@@ -1,2 +1,2 @@
 def A(Art): #this is my best version so far may need to tweak later but follows his Test Action format
-    req = [True, "str1=build_con(*indef*)", "activate(req(str2=if(not(Global.flagon(\"noun_group_flag\") and (if(feature c [loc,pp])", "print(str1+\"found pp \"+str2+\"=\"+str1); fill_gap(Global.ref,str2,str1)"]
+    req = [True, "str1=build_con(*indef*)", "activate(req(str2=if(not(Global.flagon(\"noun_group_flag\") and (if(feature c [loc,pp]))))))", "print(str1+\"found pp \"+str2+\"=\"+str1); fill_gap(Global.ref,str2,str1)"]
