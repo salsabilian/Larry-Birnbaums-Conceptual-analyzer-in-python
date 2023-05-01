@@ -1,5 +1,6 @@
 import Global
 import macros
+import utils
 
 # (defmacro def (word . prop-vals)
 #   `(mapc #'(lambda (k-v)
@@ -10,7 +11,7 @@ def def_(word, *prop_vals):
         word[k[0], v[0]] = k[1:], v[1:] # unsure
 
 # (defparameter *req-props* '(trace :trace))
-req_props = Global.trace(trace, []) # not sure
+req_props = ['trace', ':trace'] # not sure, single quote means treat it as literal expression and not evaluate it
 
 # (defun expand-req (reqform)
 #   (when (eq (car reqform) 'REQ)
@@ -31,15 +32,17 @@ def expand_req(reqform):
     props = []
     clauses = []
     if (reqform[0] == 'req'):
-        # cons 'REQUEST
+        r = ['request']
         for c in (reqform[1:]):
             if (c[0] in req_props):
-                props.append(c) # where does props come from or do we define it (props = [])?
+                props.append(c)
             else:
                 clauses.append(c)
             for clause in clauses:
                 acts = expand_sub_reqs(clause[1:])
-                
+                expand_reqs = ['clause', ['test', clause[0]], ['actions', *acts]]
+            props.append(expand_reqs)
+        return r + props
 
 # (defun expand-sub-reqs (acts &aux newacts newsub)
 #   (loop with newacts = acts
@@ -49,6 +52,13 @@ def expand_req(reqform):
 #            (setf newacts (subst newsub sub-req newacts))
 #         finally (return newacts)))
 def expand_sub_reqs(acts, aux, newacts, newsub):
+    newacts = acts
+    sub_req = sub_head_p('req', newacts)
+    while (sub_req):
+        sub_req = sub_head_p('req', newacts)
+        newsub = expand_req(sub_req)
+        newacts = subst(newsub, sub_req, newacts) # there is a subst_cd in concept_fns, but what is subst?
+        return newacts
 
 # (defmacro defterm (word atts . reqs)
 #   (let ((requests
