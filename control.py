@@ -38,6 +38,53 @@ def CA(in_=[]):
     check_begin_np()
     word = get_next_item()
 
+def check_end_np():
+  if(Global.flagon("noun_group_flag")):
+    end_noun_phrase()
+    Global.remove_flag("noun_group_flag")
+    macros.pmsg( "End of noun group")
+
+
+def check_begin_np():
+  if(not Global.flagon("noun_group_flag")):
+    Global.n_p_records = begin_noun_phrase(Global.next_word)
+    Global.add_flag("noun_group_flag")
+    if Global.changed_cons:
+      macros.pmsg("Begin noun group:")
+
+
+def get_next_item():
+  if Global.flagon("change_trace_flag"):
+    Global.pause = not(Global.pause)
+    Global.remove_flag("change_trace_flag")
+  if(Global.sentence):
+    Global.word = Global.sentence.pop(0)
+  else:
+    return None
+  if(Global.next_word() == '*'):
+    Global.add_flag("change_trace_flag")
+    Global.sentence = Global.sentence[1:]
+  Global.current_phrase.append(Global.word)
+  return Global.word
+
+
+#FILL CODE HERE
+def get_lex_info(word):
+  newlex = macros.new_lex(word)
+  if not word.get(Global.requests.get(word)):
+    #can't find function anywhere
+    look_up(word)
+  Global.word[newlex] = word
+  #unsure abt this: (setf (get newlex :reqs)            ; :pool) 
+  Global.requests[newlex] = "pool"
+  Global.build_pool(word , Global.make_requests(word, Global.requests[word]))
+
+  
+  
+
+
+
+
 def activate_item_requests(wd):
   reqs = make_requests(wd, Global.requests.get(wd, []))
   macros.pmsg("ACTIVATE-ITEM-REQUESTS for word ", wd,": ", reqs)
@@ -50,39 +97,60 @@ def activate_item_requests(wd):
     activate_pool(result)
     Global.extra_requests = []
 
-def make_requests(wd, reqs=[], bindings=[]): #fix this
-  if(reqs == []):
-    reqs = Global.requests.get(wd, [])
-  result = []
-  for req in reqs: #request is generated so I guess req should already have something? debug later with lisp code
-    result.append(gen_request(req, wd, bindings))
-  return result
 
-def gen_request(R, wd, bindings=[]):
-  reqsym = macros.new_req(wd)
-  #unsure about symbol-value R = R might be the same in python
-  if(R[0] == 'request'):
-    R = R[1:]
-  val = clausify(R)
-  Global.body[reqsym] = val
-  Global.wd[reqsym] = wd
-  Global.bindings[reqsym] = bindings #this is a list maybe should be a dictionary?
-  for form in R:
-    if form[0] == 'clause':
+def init_ca():
+  Global.init_ca_vars()
+  Global.sentence = next_sentence()
+  if(Global.sentence.find("(") != -1): # remove paranthesis
+    Global.sentence = Global.sentence.replace("(","")
+    Global.sentence = Global.sentence.replace(")","")
+    Global.parans = 1
+  Global.sentence = Global.sentence.split(" ")
+  macros.pmsg("New Sentence is ")
+  macros.pmsg(Global.sentence)
+  Global.lexical_pool = []
+  if(Global.next_word() == '*'):
+    Global.add_flag("change_trace_flag")
+    Global.sentence = Global.sentence[1:]
+  begin_noun_phrase(Global.next_word)
+
+
+def begin_noun_phrase(word=Global.next_word):
+  np_req = find_pos_req(word, ['adj', 'arg', 'name', 'noun', 'num', 'poss', 'title1'])
+  n_p_record = np_req
+  if n_p_record:
+    Global.add_flag("noun_group_flag")
+    macros.pmsg("Begin noun group:")
+  return np_req
+
+
+#FILL CODE HERE
+def put_first(req, pool):
+  Global.pool_reqs(pool)
+  for k,v in Global.pool_reqs(pool).items():
+    if v == pool:
+      del Global.pool_reqs(pool)[k]
       break
-    prop = macros.pool_req(form[0])
-    prop.append(form[1:])
-    macros.set_pool_reqs(form[0], prop)
-  Global.active[reqsym] = True
-  return reqsym
+  res = (req,  Global.pool_reqs(pool))
+  pool['pool-reqs'] = res
 
 
 
-def check_end_np():
-  if(Global.flagon("noun_group_flag")):
-    end_noun_phrase()
-    Global.remove_flag("noun_group_flag")
-    macros.pmsg( "End of noun group")
+
+def find_pos_req(lex, poslist):
+  atts = Global.atts.get(lex, [])
+  for x in poslist:
+    if x in atts:
+      atts.remove(x)
+  return atts
+
+
+#FILL CODE HERE, unsure abt this
+def get_pos(req):
+  for k,v in req:
+    if k == 'pos':
+      return req[v][1]
+  return None
 
 def end_noun_phrase():
   atts = begin_noun_phrase(Global.next_word())
@@ -98,21 +166,23 @@ def end_noun_phrase():
     return True
 
 
-def clean_up_request_pools(): # removes request pools which are no longer active
+def clean_up_request_pools():
   clean_up_special_pools()
   for p in Global.request_pools:
     if(live_reqs(p)):
       Global.request_pools.append(p)
 
-def save_live_reqs(pool):
-  for r in Global.pool_reqs(pool):
-    if not(r in Global.active): # not sure 100% on this
-      Global.remove_pool_reqs(pool, r)
 
 def live_reqs(pool):
   for r in Global.pool_reqs(pool):
     if(r in Global.active):
       return True
+    
+def save_live_reqs(pool):
+  for r in Global.pool_reqs(pool):
+    if not(r in Global.active): # not sure 100% on this
+      Global.remove_pool_reqs(pool, r)
+
 
 def clean_up_special_pools():
   save_live_reqs('lexical_pool')
@@ -125,6 +195,13 @@ def consider_lexical_requests():
     consider_all_requests()
 
 
+def consider_requests():
+  if Global.flagon("noun_group_flag"):
+    macros.pmsg("Considering latest requests:")
+    consider_latest_requests()
+  else:
+    consider_all_requests()
+
 def consider_pool(pool):
   reqs = Global.pool_reqs(pool)
   t = []
@@ -135,6 +212,88 @@ def consider_pool(pool):
     return t
   else:
     return []
+
+
+def consider_all_requests(): #(fixed uncertainty (I think?))
+  if(Global.request_pools):
+    macros.pmsg("CONSIDER-ALL-REQUESTS")
+    for pool in Global.request_pools:
+      if consider_pool(pool).any():
+        break
+
+
+
+def consider_latest_requests():
+ #latest_pool = Global.request_pools[0]
+ older_pools = Global.request_pools[1:]
+ #latest_pool = ldiff(Global.request_pools, older_pools[1:])
+ latest_pools = list (set(Global.request_pools).symmetric_difference.set(older_pools[1:]))
+ while any(map(consider_pool, latest_pools)):
+   macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
+
+
+#FILL CODE HERE
+def collect_vars1(form, bindings = []):
+  if not isinstance(form, list) and not isinstance(form, tuple):
+    return None
+  if form[0] == ':=' or bindings [form[1]]:
+    res = (form[1], [])
+    bindings.append(res)
+    bindings = merge_blists(collect_vars1(form[0], bindings),
+                        collect_vars1(form[0], bindings))
+
+  
+
+
+
+
+#FILL CODE HERE
+def merge_blists(a, b):
+  pass
+
+def collect_vars(form, bindings=[]):
+  foundvars = collect_vars1(form, bindings)
+  res = []
+  for s in foundvars:
+    res.append(s[0], s[:1]) # I dont know this seems wrong unsure
+  return foundvars, res
+
+
+
+
+#bind
+def bind(var, val):
+  pass
+
+
+#FILL CODE HERE
+def bindings_as_letvars(bndgs):
+  pass
+
+def eval_test(req, cl, bindings): #not sure on this one either
+  bdgs, vars = collect_vars(cl, bindings)
+  tstform = cl['test']
+  bindings = bdgs
+  Global.current_req = req
+  res = []
+  form = [bindings, Global.current_req]
+  form.append(res)
+  form.append(vars)
+  form.append(tstform[:-1])
+  res = tstform[-1]
+  form.append(res) # this definitely seems wrong
+  form.append(bindings)
+  res = form.value
+  bds = None
+  return res, bds
+
+
+
+
+#FILL CODE HERE
+def eval_actions(req, cl, bindings, pool):
+  pass
+
 
 def consider(pool, request): #not sure on this entire function
   Global.new_con = []
@@ -159,115 +318,65 @@ def consider(pool, request): #not sure on this entire function
     else:
       return False
 
-def eval_test(req, cl, bindings): #not sure on this one either
-  bdgs, vars = collect_vars(cl, bindings)
-  tstform = cl['test']
-  bindings = bdgs
-  Global.current_req = req
-  res = []
-  form = [bindings, Global.current_req]
-  form.append(res)
-  form.append(vars)
-  form.append(tstform[:-1])
-  res = tstform[-1]
-  form.append(res) # this definitely seems wrong
-  form.append(bindings)
-  res = form.value
-  bds = None
-  return res, bds
-
-def collect_vars(form, bindings=[]):
-  foundvars = collect_vars1(form, bindings)
-  res = []
-  for s in foundvars:
-    res.append(s[0], s[:1]) # I dont know this seems wrong unsure
-  return foundvars, res
-
-
-def consider_all_requests(): #(fixed uncertainty (I think?))
-  if(Global.request_pools):
-    #macros.pmsg("CONSIDER-ALL-REQUESTS")
-    for pool in Global.request_pools:
-      if consider_pool(pool).any():
-        break
-
-
-def get_next_item():
-  if Global.flagon("change_trace_flag"):
-    Global.pause = not(Global.pause)
-    Global.remove_flag("change_trace_flag")
-  if(Global.sentence):
-    Global.word = Global.sentence.pop(0)
-  else:
-    return None
-  if(Global.next_word() == '*'):
-    Global.add_flag("change_trace_flag")
-    Global.sentence = Global.sentence[1:]
-  Global.current_phrase.append(Global.word)
-  return Global.word
 
 def next_sentence():
   return Global.input.pop(0)
 
-def init_ca():
-  Global.init_ca_vars()
-  Global.sentence = next_sentence()
-  if(Global.sentence.find("(") != -1): # remove paranthesis
-    Global.sentence = Global.sentence.replace("(","")
-    Global.sentence = Global.sentence.replace(")","")
-    Global.parans = 1
-  Global.sentence = Global.sentence.split(" ")
-  macros.pmsg("New Sentence is ")
-  macros.pmsg(Global.sentence)
-  Global.lexical_pool = []
-  if(Global.next_word() == '*'):
-    Global.add_flag("change_trace_flag")
-    Global.sentence = Global.sentence[1:]
-  begin_noun_phrase(Global.next_word)
-
-def begin_noun_phrase(word=Global.next_word):
-  np_req = find_pos_req(word, ['adj', 'arg', 'name', 'noun', 'num', 'poss', 'title1'])
-  n_p_record = np_req
-  if n_p_record:
-    Global.add_flag("noun_group_flag")
-    macros.pmsg("Begin noun group:")
-  return np_req
-
-def find_pos_req(lex, poslist):
-  atts = Global.atts.get(lex, [])
-  for x in poslist:
-    if x in atts:
-      atts.remove(x)
-  return atts
 
 
 
+#Fill CODE HERE
+def skip_next_word():
+  pass
 
-def check_begin_np():
-  if(not Global.flagon("noun_group_flag")):
-    Global.n_p_records = begin_noun_phrase(Global.next_word)
-    Global.add_flag("noun_group_flag")
-    if Global.changed_cons:
-      macros.pmsg("Begin noun group:")
+
+#FILL CODE HERE
+def build_pool(wd, new_requests):
+  pass
+
+
+#FILL CODE HERE
+def activate_pool(pool):
+  pass
+
+def make_requests(wd, reqs=[], bindings=[]): #fix this
+  if(reqs == []):
+    reqs = Global.requests.get(wd, [])
+  result = []
+  for req in reqs:
+    result.append(gen_request(req, wd, bindings))
+  return result
+
+def gen_request(R, wd, bindings=[]):
+  reqsym = macros.new_req(wd)
+  #unsure about symbol-value R = R might be the same in python
+  if(R[0] == 'request'):
+    R = R[1:]
+  val = clausify(R)
+  Global.body[reqsym] = val
+  Global.wd[reqsym] = wd
+  Global.bindings[reqsym] = bindings #this is a list maybe should be a dictionary?
+  for form in R:
+    if form[0] == 'clause':
+      break
+    prop = macros.pool_req(form[0])
+    prop.append(form[1:])
+    macros.set_pool_reqs(form[0], prop)
+  Global.active[reqsym] = True
+  return reqsym
+
+
+#FILL CODE HERE
+def clausify(r):
+  pass
 
 # def ldiff (l1 l2):
 #   return list(set(l1).symmetric_difference(set(l2)))
 
 #have some doubts on this  
-def consider_latest_requests():
- #latest_pool = Global.request_pools[0]
- older_pools = Global.request_pools[1:]
- #latest_pool = ldiff(Global.request_pools, older_pools[1:])
- latest_pools = list (set(Global.request_pools).symmetric_difference.set(older_pools[1:]))
- while any(map(consider_pool, latest_pools)):
-   macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
 
-def consider_requests():
-  if Global.flagon("noun_group_flag"):
-    macros.pmsg("Considering latest requests:")
-    consider_latest_requests()
-  else:
-    consider_all_requests()
+
+
 
 def consider_lexical_requests():
     if Global.pool_reqs('lexical_pool'):
