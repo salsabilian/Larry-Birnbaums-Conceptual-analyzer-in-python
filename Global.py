@@ -119,6 +119,14 @@ def add_flag(flag):
 def add_property(prop, key, val):
     prop[key] = val
 
+def subst(new_val, old_val, sub_in_list):
+    length = len(sub_in_list)
+    i = 0
+    while (i != length):
+        if (sub_in_list[i] == old_val):
+            sub_in_list[i] = new_val
+        i += 1
+
 # ;;; This initializes some variables - book-keeping globals containing generated gensyms
 # (defun INIT-CA-VARS ()
 #   (setf ALL-REQS nil)

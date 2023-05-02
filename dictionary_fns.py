@@ -53,12 +53,12 @@ def expand_req(reqform):
 #         finally (return newacts)))
 def expand_sub_reqs(acts, aux, newacts, newsub):
     newacts = acts
-    sub_req = sub_head_p('req', newacts)
+    sub_req = utils.sub_head_p('req', newacts)
     while (sub_req):
-        sub_req = sub_head_p('req', newacts)
+        sub_req = utils.sub_head_p('req', newacts)
         newsub = expand_req(sub_req)
-        newacts = subst(newsub, sub_req, newacts) # there is a subst_cd in concept_fns, but what is subst?
-        return newacts
+        newacts = Global.subst(newsub, sub_req, newacts) 
+    return newacts
 
 # (defmacro defterm (word atts . reqs)
 #   (let ((requests
