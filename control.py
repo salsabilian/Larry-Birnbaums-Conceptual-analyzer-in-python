@@ -71,14 +71,13 @@ def get_next_item():
 #FILL CODE HERE
 def get_lex_info(word):
   newlex = macros.new_lex(word)
-  if not word.get(Global.requests.get(word)): # this section has an ignore on it so I'm pretty sure you don't have to do it
+  if not word.get(Global.requests.get(word)):
     #can't find function anywhere
     look_up(word)
   Global.word[newlex] = word
-  #unsure abt this: (setf (get newlex :reqs)             ; :pool) (build-pool word 
-  # since the pool and build-pool is commented, should it just be (setf (get newlex :reqs) (MAKE-REQUESTS word (get word :requests)))?
+  #unsure abt this: (setf (get newlex :reqs)            ; :pool) 
   Global.requests[newlex] = "pool"
-  Global.build_pool(word , Global.make_requests(word, Global.requests[word])) 
+  Global.build_pool(word , Global.make_requests(word, Global.requests[word]))
 
   
   
@@ -250,7 +249,7 @@ def collect_vars1(form, bindings = []):
 
 #FILL CODE HERE
 def merge_blists(a, b):
-  pass
+  return list(set(a + b ))
 
 def collect_vars(form, bindings=[]):
   foundvars = collect_vars1(form, bindings)
@@ -262,7 +261,7 @@ def collect_vars(form, bindings=[]):
 
 
 
-#bind
+#FILL CODE HERE
 def bind(var, val):
   pass
 
@@ -293,7 +292,28 @@ def eval_test(req, cl, bindings): #not sure on this one either
 
 #FILL CODE HERE
 def eval_actions(req, cl, bindings, pool):
-  pass
+  bdgs,vars = collect_vars(cl, bindings)
+ 
+
+  act_list = cl["actions"][1:]
+  bvars = bindings_as_letvars(bindings)
+  act_vars = collect_vars(act_list, bindings)
+  
+  bindings = bdgs
+  current_req = req
+  current_pool = pool
+  
+
+  #unsure about this part
+  eform = '''
+(let ({0} (*bindings* {1}) (current-req '{2}) (current-pool '{3}))
+  {4})
+'''.format(', '.join(vars), bdgs, req, pool, '\n  '.join(act_list))
+  
+  return eval(eform)
+
+  
+
 
 
 def consider(pool, request): #not sure on this entire function
@@ -328,17 +348,19 @@ def next_sentence():
 
 #Fill CODE HERE
 def skip_next_word():
-  pass
+  Global.add_flag("skip_word_flag")
 
 
 #FILL CODE HERE
 def build_pool(wd, new_requests):
-  pass
+  pool = macros.new_pool(wd)
 
 
 #FILL CODE HERE
 def activate_pool(pool):
-  pass
+  if pool not in Global.request_pools:
+    Global.request_pools.insert(0, pool)
+  return Global.request_pools
 
 def make_requests(wd, reqs=[], bindings=[]): #fix this
   if(reqs == []):
@@ -368,8 +390,18 @@ def gen_request(R, wd, bindings=[]):
 
 
 #FILL CODE HERE
+
+#the lisp version uses R instead of r, wondering why
 def clausify(r):
-  pass
+  res = []
+  clauses = r 
+  if r[0] == 'request':
+    clauses = r[1:]
+  for clause in clauses:
+    res.append((clause[1:]['test'], clause[1]['assoc']))
+  return res
+      
+      
 
 # def ldiff (l1 l2):
 #   return list(set(l1).symmetric_difference(set(l2)))
