@@ -71,13 +71,14 @@ def get_next_item():
 #FILL CODE HERE
 def get_lex_info(word):
   newlex = macros.new_lex(word)
-  if not word.get(Global.requests.get(word)):
+  if not word.get(Global.requests.get(word)): # this section has an ignore on it so I'm pretty sure you don't have to do it
     #can't find function anywhere
     look_up(word)
   Global.word[newlex] = word
-  #unsure abt this: (setf (get newlex :reqs)            ; :pool) 
+  #unsure abt this: (setf (get newlex :reqs)             ; :pool) (build-pool word 
+  # since the pool and build-pool is commented, should it just be (setf (get newlex :reqs) (MAKE-REQUESTS word (get word :requests)))?
   Global.requests[newlex] = "pool"
-  Global.build_pool(word , Global.make_requests(word, Global.requests[word]))
+  Global.build_pool(word , Global.make_requests(word, Global.requests[word])) 
 
   
   
