@@ -5,6 +5,31 @@ import Global
 
 pmsg_flags = True
 
+
+def new_con():
+    pass
+
+
+def new_lex(word):
+    pass
+
+def new_req(wd):
+    Global.uniqueid = Global.uniqueid + 1
+    request = "REQ-" + wd + "-" + str(Global.uniqueid)
+    Global.all_reqs.insert(0, request)
+    return Global.all_reqs[0]
+
+def new_pool(word):
+    pass
+
+
+def putprop(sym, val, key):
+    pass
+
+def neq(arg1, arg2):
+    pass
+
+
 def pmsg(*args):
     if(pmsg_flags) and (pmsg_flags or args[0] == True or args[0] == pmsg_flags):
         pmsg1(*args)
@@ -37,8 +62,10 @@ def untrace_reqs(*reqs):
         for r in reqs:
             trace_reqs = trace_reqs.remove(r)
 
-def new_req(wd):
-    Global.uniqueid = Global.uniqueid + 1
-    request = "REQ-" + wd + "-" + str(Global.uniqueid)
-    Global.all_reqs.insert(0, request)
-    return Global.all_reqs[0]
+
+def pool_reqs(pool):
+  pass
+
+
+def props(s):
+    pass
