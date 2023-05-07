@@ -1,7 +1,14 @@
 #globals.lisp
+import crash_dic
 
 #Added variable to keep track of parans
 parans = 0
+# Might Want to switch to a class based implementation (more dynamic)
+class dic_word:
+    extra_requests = []
+class req:
+    pass
+a = dic_word()
 # Added variable to keep track of attribute property
 atts = {}
 # Added variable to keep track of active property
@@ -66,7 +73,7 @@ sentence = []
 input = []
 
 # (defparameter WORD nil) ;; the current word after pop'd off sentence
-word = []
+word = None
 # (defparameter *defined-words* nil) ;; added by MB to keep track of defterms
 defined_words = []
 # ;;; changing this to a macro
@@ -159,6 +166,9 @@ def init_ca_vars():
     changed_cons = []
     # sent = []
     sentence = []
+    req, atts = crash_dic.dic_a()
+    a.atts = atts
+    a.requests = [req]
 
 def pool_reqs(pool):
     return globals()[pool]
@@ -168,3 +178,6 @@ def set_pool_reqs(pool, new_value):
 
 def remove_pool_reqs(pool, value):
     globals()[pool].remove(value)
+
+def find_class(class_name):
+    return globals()[class_name]

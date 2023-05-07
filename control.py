@@ -86,16 +86,16 @@ def get_lex_info(word):
 
 
 def activate_item_requests(wd):
-  reqs = make_requests(wd, Global.requests.get(wd, []))
+  reqs = make_requests(wd, Global.find_class(wd).requests)
   macros.pmsg("ACTIVATE-ITEM-REQUESTS for word ", wd,": ", reqs)
-  if(Global.extra_requests or reqs):
+  if(Global.find_class(wd).extra_requests or reqs):
     if(Global.flagon("skip_word_flag")):
       Global.remove_flag("skip_word_flag")
     else:
-      Global.extra_requests.append(reqs)
-    result = build_pool(wd, Global.extra_requests)
+      Global.find_class(wd).extra_requests.append(reqs)
+    result = build_pool(wd, Global.find_class(wd).extra_requests)
     activate_pool(result)
-    Global.extra_requests = []
+    Global.find_class(wd).extra_requests = []
 
 
 def init_ca():
@@ -175,12 +175,12 @@ def clean_up_request_pools():
 
 def live_reqs(pool):
   for r in Global.pool_reqs(pool):
-    if(r in Global.active):
+    if(r in Global.find_class(Global.word).active):
       return True
     
 def save_live_reqs(pool):
   for r in Global.pool_reqs(pool):
-    if not(r in Global.active): # not sure 100% on this
+    if not(r in Global.find_class(Global.word).active):
       Global.remove_pool_reqs(pool, r)
 
 
@@ -354,7 +354,8 @@ def skip_next_word():
 #FILL CODE HERE
 def build_pool(wd, new_requests):
   pool = macros.new_pool(wd)
-
+  Global.set_pool_reqs(pool, new_requests)
+  return pool
 
 #FILL CODE HERE
 def activate_pool(pool):
@@ -362,9 +363,9 @@ def activate_pool(pool):
     Global.request_pools.insert(0, pool)
   return Global.request_pools
 
-def make_requests(wd, reqs=[], bindings=[]): #fix this
+def make_requests(wd, reqs=[], bindings=[]):
   if(reqs == []):
-    reqs = Global.requests.get(wd, [])
+    reqs = [Global.find_class(wd).requests]
   result = []
   for req in reqs:
     result.append(gen_request(req, wd, bindings))
@@ -372,19 +373,20 @@ def make_requests(wd, reqs=[], bindings=[]): #fix this
 
 def gen_request(R, wd, bindings=[]):
   reqsym = macros.new_req(wd)
+  globals()[reqsym] = Global.req()
   #unsure about symbol-value R = R might be the same in python
-  if(R[0] == 'request'):
+  if R[0] == "request":
     R = R[1:]
   val = clausify(R)
-  Global.body[reqsym] = val
-  Global.wd[reqsym] = wd
-  Global.bindings[reqsym] = bindings #this is a list maybe should be a dictionary?
-  for form in R:
-    if form[0] == 'clause':
-      break
-    prop = macros.pool_req(form[0])
-    prop.append(form[1:])
-    macros.set_pool_reqs(form[0], prop)
+  globals()[reqsym].body = val
+  globals()[reqsym].wd = wd
+  globals()[reqsym].bindings= bindings #this is a list maybe should be a dictionary?
+  #removing form loop stuff for now if needed will come back
+  #for form in R:
+  #  if form[0] == 'clause':
+  #    break
+  #  prop = macros.pool_reqs(form[0])
+  #  macros.set_pool_reqs(form[0], prop)
   Global.active[reqsym] = True
   return reqsym
 
@@ -393,13 +395,11 @@ def gen_request(R, wd, bindings=[]):
 
 #the lisp version uses R instead of r, wondering why
 def clausify(r):
-  res = []
-  clauses = r 
   if r[0] == 'request':
-    clauses = r[1:]
-  for clause in clauses:
-    res.append((clause[1:]['test'], clause[1]['assoc']))
-  return res
+    r = r[1:]
+  if r[0].find("clause") != -1:
+    r[0] = r[0].replace("clause","")
+  return r
       
       
 

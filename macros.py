@@ -20,7 +20,10 @@ def new_req(wd):
     return Global.all_reqs[0]
 
 def new_pool(word):
-    pass
+    Global.uniqueid = Global.uniqueid + 1
+    pool = "POOL-" + word + "-" + str(Global.uniqueid)
+    Global.all_pools.insert(0, pool)
+    return Global.all_pools[0]
 
 
 def putprop(sym, val, key):
