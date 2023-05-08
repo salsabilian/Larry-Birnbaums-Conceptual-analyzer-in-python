@@ -1,7 +1,10 @@
 def dic_a(art = "art"): #this is my best version so far may need to tweak later but follows his Test Action format
-    req = ["request", "clause(test t)", "(actions(:=(str1,build-con(\"*indef\", nil, nil))(activate(request(clause(test(:= (str2, (if-find(Feature(c, [\"loc\", \"PP\"]) and not(flagon(\"noun_group_flag\"))))))(actions (print(str1+\"=\"+str2+\"found pp\")) (fill-gap(\":ref\", str2, str1)))))))))))"]
+    req = ["request", "clause(test t)", "(actions(:=(str1,build-con(\"*indef\",nil,nil))(activate(request(clause(test(:=(str2,(if-find(Feature(c,[\"loc\",\"PP\"]) and not(flagon(\"noun_group_flag\"))))))(actions(print(str1+\"=\"+str2+\"found pp\")) (fill-gap(\":ref\",str2,str1)))))))))))"]
     atts = art
     return req, atts
+
+def bindings_a():
+    return [["str1"],["str2"]]
 
 def the(art):
     req = [True, "str1=build_con(*def*)", "activate(req(str2=if(not(Global.flagon(\"noun_group_flag\") and (request_fns.if_find(feature c [loc,pp]))))))", "fill_gap(Global.ref,str2,str1)"]

@@ -5,9 +5,12 @@ import crash_dic
 parans = 0
 # Might Want to switch to a class based implementation (more dynamic)
 class dic_word:
-    extra_requests = []
+    extra_requests = None
+    tracep = None
+    bindings = None
 class req:
-    pass
+    tracep = None
+    bindings = None
 a = dic_word()
 # Added variable to keep track of attribute property
 atts = {}

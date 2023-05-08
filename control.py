@@ -92,7 +92,10 @@ def activate_item_requests(wd):
     if(Global.flagon("skip_word_flag")):
       Global.remove_flag("skip_word_flag")
     else:
-      Global.find_class(wd).extra_requests.append(reqs)
+      if(Global.find_class(wd).extra_requests):
+        Global.find_class(wd).extra_requests.append(reqs)
+      else:
+        Global.find_class(wd).extra_requests = reqs
     result = build_pool(wd, Global.find_class(wd).extra_requests)
     activate_pool(result)
     Global.find_class(wd).extra_requests = []
@@ -204,19 +207,19 @@ def consider_requests():
 
 def consider_pool(pool):
   reqs = Global.pool_reqs(pool)
+  print(reqs)
   t = []
   if(reqs):
-    for r in reqs:
-      if consider(reqs, pool): #not sure 100% on this (more certain) (this always has one item so may be easier to return true)
+    for req in reqs:
+      if consider(req, pool): #not sure 100% on this (more certain) (this always has one item so may be easier to return true)
         t.append(True)
     return t
   else:
     return []
 
 
-def consider_all_requests(): #(fixed uncertainty (I think?))
-  if(Global.request_pools):
-    macros.pmsg("CONSIDER-ALL-REQUESTS")
+def consider_all_requests():
+  if Global.request_pools:
     for pool in Global.request_pools:
       if consider_pool(pool).any():
         break
@@ -233,14 +236,17 @@ def consider_latest_requests():
 
 
 #FILL CODE HERE
-def collect_vars1(form, bindings = []):
-  if not isinstance(form, list) and not isinstance(form, tuple):
+def collect_vars1(form, bindings = []): #parse the strings for := and find variables
+  if not isinstance(form, list) and not isinstance(form, tuple): #if its not a list something is deeply wrong
     return None
-  if form[0] == ':=' or bindings [form[1]]:
-    res = (form[1], [])
-    bindings.append(res)
-    bindings = merge_blists(collect_vars1(form[0], bindings),
-                        collect_vars1(form[0], bindings))
+  if form[0].find(':=') != -1: #if theres no := theres no bindings
+     idx = [i for i in range(len(form[0])) if form[0].startswith(':=', i)] #
+     for i in idx:
+      comma = form[0][i+3:].find(',')
+      bindings.append([form[0][i+3:i+3+comma]]) #dont forget double brackets here
+  else:
+      bindings = merge_blists(collect_vars1(form[1:])) #recursively go through all the strings
+  return bindings
 
   
 
@@ -248,14 +254,20 @@ def collect_vars1(form, bindings = []):
 
 
 #FILL CODE HERE
-def merge_blists(a, b):
-  return list(set(a + b ))
+def merge_blists(b): #remove duplicates in the lists of vars
+  temp_bindings = []
+  for i in b:
+    if i not in temp_bindings:
+      temp_bindings.append(i)
+  b = temp_bindings
+  return b
 
 def collect_vars(form, bindings=[]):
   foundvars = collect_vars1(form, bindings)
   res = []
   for s in foundvars:
-    res.append(s[0], s[:1]) # I dont know this seems wrong unsure
+    s.append(None)
+    res.append(s)
   return foundvars, res
 
 
@@ -270,7 +282,7 @@ def bind(var, val):
 def bindings_as_letvars(bndgs):
   pass
 
-def eval_test(req, cl, bindings): #not sure on this one either
+def eval_test(req, cl, bindings):
   bdgs, vars = collect_vars(cl, bindings)
   tstform = cl['test']
   bindings = bdgs
@@ -316,21 +328,22 @@ def eval_actions(req, cl, bindings, pool):
 
 
 
-def consider(pool, request): #not sure on this entire function
+def consider(request,pool): #not sure on this entire function
   Global.new_con = []
-  body = Global.body.get(request, [])
-  tracep =  Global.tracep.get(request, []) #not 100% missing 2nd part 'tracep
-  bindings = Global.bindings.get(request, [])
-  if Global.active.get(request, []):
+  body = globals()[request].body
+  print(body)
+  tracep =  globals()[request].tracep
+  bindings = globals()[request].bindings
+  if globals()[request].active:
     if tracep:
       macros.pmsg("CONSIDERing active request", "body: ", body)
       macros.pmsg(" bindings:", bindings)
-    for clause in body:
-      res, tstbindings = eval_test(request, clause, bindings)
-      if res:
-        macros.pmsg(request, "has fired")
-        Global.active.pop(request)
-        eval_actions(request, clause, tstbindings, pool)
+    #for clause in body: # this didnt work anyway in the original code
+    res, tstbindings = eval_test(request, body, bindings)
+    if res:
+      macros.pmsg(request, "has fired")
+      globals()[request].active = None
+      eval_actions(request, body, tstbindings, pool)
     if Global.active.get(request, []) == []:
       if Global.flagon('no_kill_flag'):
          Global.remove_flag('no_kill_flag')
@@ -387,7 +400,7 @@ def gen_request(R, wd, bindings=[]):
   #    break
   #  prop = macros.pool_reqs(form[0])
   #  macros.set_pool_reqs(form[0], prop)
-  Global.active[reqsym] = True
+  globals()[reqsym].active = True
   return reqsym
 
 
