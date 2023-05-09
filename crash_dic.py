@@ -45,10 +45,54 @@ def the(art):
     atts =  art
     return req, atts
 
+def actions_the():
+    wd = Global.find_class("the")
+    wd.str1 = concept_fns.build_con(["def"], [], [])
+    request_fns.activate([["request", "clause(test cond_the(str2))", "actions(actions_the_1(str1, str2))"]])
+
+def cond_the():
+    if(if_find(feature(c, ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
+        wd = Global.find_class("the")
+        wd.str2 = True
+        return True
+    else:
+        wd = Global.find_class("the")
+        wd.str2 = False
+        return False
+
+def actions_the_1():
+    wd = Global.find_class("the")
+    fill_gap(":ref", wd.str2, wd.str1)
+
+def bindings_the():
+    return ["str1", "str2"]
+
 def small(adj):
     req = [True, "str1=build_con(*ltnorm*)", "activate(req(str2=(request_fns.if_find(feature c [pp]))))", "fill_gap(Global.size,str2,str1)"]
     atts = adj
     return req, atts
+
+def actions_small():
+    wd = Global.find_class("small")
+    wd.str1 = concept_fns.build_con(["ltnorm"], [], [])
+    request_fns.activate([["request", "clause(test cond_small(str2))", "actions(actions_small_1(str1, str2))"]])
+
+def cond_small():
+    if(if_find(feature(c, ['pp']))):
+        wd = Global.find_class("small")
+        wd.str2 = True
+        return True
+    else:
+        wd = Global.find_class("small")
+        wd.str2 = False
+        return False
+
+def actions_small_1():
+    wd = Global.find_class("small")
+    fill_gap(":ref", wd.str2, wd.str1)
+
+def bindings_small():
+    return ["str1", "str2"]
 
 def twin_engine(adj):
     req = [True,
@@ -57,6 +101,10 @@ def twin_engine(adj):
            "fill_gap(Global.has_part,str2,str1)"]
     atts = adj
     return req, atts
+
+def actions_twin_engine():
+    wd = Global.find_class("twin engine")
+    wd.str1 = concept_fns.build_con(["PP", Global.class, (group)], [Global.number, ])
 
 def plane (noun):
     req = [True, "build_con([*PP*, Global.class, (vehicle), Global.type, (airplane)]"]
