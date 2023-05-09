@@ -70,7 +70,7 @@ all_pools = []
 # (defparameter CURRENT-POOL nil) ;; set when considering requests in that pool (MB 2/1/21)
 current_pool = []
 # (defparameter CURRENT-REQ nil)
-current_req = []
+current_req = None
 # (defparameter ALL-LEXES nil)
 all_lexes = []
 # ; (defparameter SENT nil)  ;; redundant with SENTENCE - changed all occurrences to SENTENCE
