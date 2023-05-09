@@ -1,7 +1,7 @@
 import concept_fns
 import Global
 
-def add_con(concept, fillers=None, equivalences=None, markers=None):
+def add_con(concept, fillers=[], equivalences=[], markers=[]):
     newcon = concept_fns.build_cd(concept, fillers, equivalences)
     if(markers):
         markers = eval(newcon)

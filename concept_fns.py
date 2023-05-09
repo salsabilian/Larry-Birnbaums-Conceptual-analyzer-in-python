@@ -12,10 +12,10 @@ import request_fns
 
 # was originally a macro but no macros in python Add-Con calls build-cd (the function below)
 # originally uses an apostrophe to stop direct evaluation (in lisp) not sure if thats an issue will find out if it crashes
-def build_con(concept, fillers=None, equivalences=None):
+def build_con(concept, fillers=[], equivalences=[]):
     return request_fns.add_con(concept, fillers, equivalences)
 
-def build_cd(concept, fillers=None, equivalences=None):
+def build_cd(concept, fillers=[], equivalences=[]):
     con = make_cd(concept)
     for e in equivalences: # lambda(e) equivalences
         subst_cd(get_role_filler(e[0], con), get_role_filler(e[1], con), con) #car = e[0] cadr = e[1]

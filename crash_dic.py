@@ -10,7 +10,7 @@ def dic_a(art = "art"): #this is my best version so far may need to tweak later 
 
 def actions_a():
     wd = Global.find_class("a")
-    wd.str1 = concept_fns.build_con("indef", None, None)
+    wd.str1 = concept_fns.build_con("indef", [], [])
     activate(["request", "clause(test cond_a(str2))", "actions(actions_a_1(str1, str2))"])
 
 def cond_a():
