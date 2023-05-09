@@ -1,5 +1,6 @@
 import Global
 import macros
+import crash_dic
 
 # lisp version stored data as a list so modifications needed
 # I think we just convert to a list split at spaces
@@ -104,7 +105,7 @@ def activate_item_requests(wd):
 def init_ca():
   Global.init_ca_vars()
   Global.sentence = next_sentence()
-  if(Global.sentence.find("(") != -1): # remove paranthesis
+  if(Global.sentence.find("(") != -1): # remove parenthesis
     Global.sentence = Global.sentence.replace("(","")
     Global.sentence = Global.sentence.replace(")","")
     Global.parans = 1
@@ -207,7 +208,6 @@ def consider_requests():
 
 def consider_pool(pool):
   reqs = Global.pool_reqs(pool)
-  print(reqs)
   t = []
   if(reqs):
     for req in reqs:
@@ -235,19 +235,43 @@ def consider_latest_requests():
    macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
 
 
-#FILL CODE HERE
-def collect_vars1(form, bindings = []): #parse the strings for := and find variables
-  if not isinstance(form, list) and not isinstance(form, tuple): #if its not a list something is deeply wrong
-    return None
-  if form[0].find(':=') != -1: #if theres no := theres no bindings
-     idx = [i for i in range(len(form[0])) if form[0].startswith(':=', i)] #
-     for i in idx:
-      comma = form[0][i+3:].find(',')
-      bindings.append([form[0][i+3:i+3+comma]]) #dont forget double brackets here
-  else:
-      bindings = merge_blists(collect_vars1(form[1:])) #recursively go through all the strings
-  return bindings
+#def collect_vars1(form, bindings = []): #parse the strings for := and find variables
+#  if not isinstance(form, list) and not isinstance(form, tuple): #if its not a list something is deeply wrong
+#    return None
+#  if form[0].find(':=') != -1: #if theres no := theres no bindings
+#    idx = [i for i in range(len(form[0])) if form[0].startswith(':=', i)] #
+#    for i in idx:
+#      comma = form[0][i+3:].find(',')
+#      bindings.append([form[0][i+3:i+3+comma]]) #dont forget double brackets here
+#  else:
+#    bindings = merge_blists(collect_vars1(form[1:])) #recursively go through all the strings
+#  return bindings
 
+#FILL CODE HERE
+#def collect_vars1(form, bindings = []): #parse the strings for variable bindings stored as function parameters inside
+#  if not isinstance(form, list) and not isinstance(form, tuple): #if its not a list something is deeply wrong
+#    return None
+#  for x in form: #run through the form list
+#    str = "actions_" + Global.word
+#    if x.find(str) != -1: #if theres no function call theres no bindings
+#     funcidx = x.find(str)
+#     funcidx = funcidx + 8 + len(Global.word)
+#     idx = [i for i in range(len(x)) if x.startswith(',', i)] # get all the idx values
+#     for i in idx:
+#      bindings.append(x[funcidx+1:i])
+#      funcidx = i
+#      bindings = merge_blists(bindings) #remove any duplicates
+#     if(x[funcidx:].find(')') != -1):
+#       idx = x[:funcidx].find(')')
+#       bindings.append(x[funcidx+1:idx-1])
+#       bindings = merge_blists(bindings) # remove any duplicates
+#  return bindings
+
+def collect_vars1(form,bindings = []):
+  str = "crash_dic.bindings_" + Global.word + "()"
+  bindings = eval(str)
+  print(bindings)
+  return bindings
   
 
 
@@ -264,10 +288,10 @@ def merge_blists(b): #remove duplicates in the lists of vars
 
 def collect_vars(form, bindings=[]):
   foundvars = collect_vars1(form, bindings)
-  res = []
+  res = {}
   for s in foundvars:
-    s.append(None)
-    res.append(s)
+    wd = Global.find_class(Global.word)
+    res[s] = getattr(wd, s)
   return foundvars, res
 
 
@@ -275,7 +299,7 @@ def collect_vars(form, bindings=[]):
 
 #FILL CODE HERE
 def bind(var, val):
-  pass
+  globals()[var] = val
 
 
 #FILL CODE HERE
@@ -284,45 +308,30 @@ def bindings_as_letvars(bndgs):
 
 def eval_test(req, cl, bindings):
   bdgs, vars = collect_vars(cl, bindings)
-  tstform = cl['test']
-  bindings = bdgs
+  tstform = cl[0].replace("test", "")
+  bindings = bdgs #need to set global bindings at some point
   Global.current_req = req
-  res = []
-  form = [bindings, Global.current_req]
-  form.append(res)
-  form.append(vars)
-  form.append(tstform[:-1])
-  res = tstform[-1]
-  form.append(res) # this definitely seems wrong
-  form.append(bindings)
-  res = form.value
-  bds = None
+  res = tstform
+  Global.bindings = bindings
+  res = eval(tstform) #bds is done in eval in original but we can set them using a assign function call if needed
+  bds = bindings
   return res, bds
-
 
 
 
 #FILL CODE HERE
 def eval_actions(req, cl, bindings, pool):
   bdgs,vars = collect_vars(cl, bindings)
- 
-
-  act_list = cl["actions"][1:]
+  idx = cl[1].find("actions") #index 1 because crash-dic is split into [(request),clause,actions]
+  act_list = cl[1][idx+7:] #length of word actions
   bvars = bindings_as_letvars(bindings)
-  act_vars = collect_vars(act_list, bindings)
+  act_vars = collect_vars([act_list], bindings)
   
   bindings = bdgs
   current_req = req
   current_pool = pool
   
-
-  #unsure about this part
-  eform = '''
-(let ({0} (*bindings* {1}) (current-req '{2}) (current-pool '{3}))
-  {4})
-'''.format(', '.join(vars), bdgs, req, pool, '\n  '.join(act_list))
-  
-  return eval(eform)
+  return eval(act_list)
 
   
 
@@ -331,7 +340,6 @@ def eval_actions(req, cl, bindings, pool):
 def consider(request,pool): #not sure on this entire function
   Global.new_con = []
   body = globals()[request].body
-  print(body)
   tracep =  globals()[request].tracep
   bindings = globals()[request].bindings
   if globals()[request].active:

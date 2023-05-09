@@ -8,6 +8,9 @@ class dic_word:
     extra_requests = None
     tracep = None
     bindings = None
+    str1 = None
+    str2 = None
+    str3 = None
 class req:
     tracep = None
     bindings = None
