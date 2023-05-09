@@ -193,3 +193,7 @@ def find_class(class_name):
 def create_con(con_name):
     globals()[con_name] = con()
     return con_name
+
+def create_req(req_name):
+    r = globals()[req_name] = req()
+    return r

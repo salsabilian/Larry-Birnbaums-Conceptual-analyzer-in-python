@@ -338,10 +338,11 @@ def eval_actions(req, cl, bindings, pool):
 
 def consider(request,pool): #not sure on this entire function
   Global.new_con = []
-  body = globals()[request].body
-  tracep =  globals()[request].tracep
-  bindings = globals()[request].bindings
-  if globals()[request].active:
+  req = Global.find_class(request)
+  body = req.body
+  tracep =  req.tracep
+  bindings = req.bindings
+  if req.active:
     if tracep:
       macros.pmsg("CONSIDERing active request", "body: ", body)
       macros.pmsg(" bindings:", bindings)
@@ -349,12 +350,12 @@ def consider(request,pool): #not sure on this entire function
     res, tstbindings = eval_test(request, body, bindings)
     if res:
       macros.pmsg(request, "has fired", "\n")
-      globals()[request].active = None
+      req.active = None
       eval_actions(request, body, tstbindings, pool)
-    if Global.active.get(request, []) == []:
+    if not req.active:
       if Global.flagon('no_kill_flag'):
          Global.remove_flag('no_kill_flag')
-         Global.active[request] = True
+         req.active = True
       return True
     else:
       return False
@@ -392,23 +393,23 @@ def make_requests(wd, reqs=[], bindings=[]):
   return result
 
 def gen_request(R, wd, bindings=[]):
-  reqsym = macros.new_req(wd)
-  globals()[reqsym] = Global.req()
+  reqname = macros.new_req(wd)
+  reqsym = Global.create_req(reqname)
   #unsure about symbol-value R = R might be the same in python
   if R[0] == "request":
     R = R[1:]
   val = clausify(R)
-  globals()[reqsym].body = val
-  globals()[reqsym].word = wd
-  globals()[reqsym].bindings= bindings #this is a list maybe should be a dictionary?
+  reqsym.body = val
+  reqsym.word = wd
+  reqsym.bindings= bindings #this is a list maybe should be a dictionary?
   #removing form loop stuff for now if needed will come back
   #for form in R:
   #  if form[0] == 'clause':
   #    break
   #  prop = macros.pool_reqs(form[0])
   #  macros.set_pool_reqs(form[0], prop)
-  globals()[reqsym].active = True
-  return reqsym
+  reqsym.active = True
+  return reqname
 
 
 #FILL CODE HERE

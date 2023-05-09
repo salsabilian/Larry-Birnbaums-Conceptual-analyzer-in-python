@@ -17,5 +17,4 @@ def activate(reqs):
 
 def activate1(reqs):
     w = Global.find_class(Global.current_req)
-    print(Global.bindings)
     newreqs = control.make_requests(w.word, reqs, Global.bindings)
