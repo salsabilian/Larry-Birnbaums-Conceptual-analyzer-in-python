@@ -1,5 +1,6 @@
 import Global
 import concept_fns
+import control
 import request_fns
 
 
@@ -12,6 +13,13 @@ def dic_a(art = "art"): #this is my best version so far may need to tweak later 
 def actions_a():
     wd = Global.find_class("a")
     wd.str1 = concept_fns.build_con(["indef"], [], [])
+    new_bind = ["str1", wd.str1]
+    idx = 0
+    while(idx < len(Global.bindings)):
+        if Global.bindings[idx] == "str1":
+            Global.bindings[idx] = new_bind
+            break
+        idx=idx+1
     request_fns.activate([["request", "clause(test cond_a(str2))", "actions(actions_a_1(str1, str2))"]]) # we want it as one request
 
 def cond_a():
