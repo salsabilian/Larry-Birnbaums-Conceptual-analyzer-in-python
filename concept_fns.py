@@ -2,6 +2,8 @@
 # This contains the functions for building and maintaining Concept Dependencies
 
 import request_fns
+import macros
+import Global
 
 #Build-CD (A function below) is used to build an atomized (divide something into smaller parts) Concept Dependency structure. It takes 3 arguments:
 #1. must evaluate to a legal CD conceptualization, namely the one which is to be atomized.
@@ -69,9 +71,9 @@ def add_gap(path, concept, filler):
         return None
 
 def make_cd(x):
-    con = build_c(x, None)
+    con = build_c(x, [])
     if(x != con):
-        con.insert(0, changed_cons)
+        Global.changed_cons.insert(0, con)
     return con
 
 # unsure about the appending newcon in seen
@@ -80,13 +82,22 @@ def build_c(x, seen):
         return x
     if(x == ["previous"]):
         return seen[1]
-    newcon = new_con
-    seen = [newcon] + seen
-    newcon = [build_m(x[0], seen), build_m(x[1:], seen)]
+    newcon = macros.new_con()
+    Global.create_con(newcon)
+    seen = seen.insert(0, newcon)
+    c = Global.find_class(newcon)
+    a = build_m(x[0], seen)
+    if(a != None): #done to prevent none values from being added to the con
+        c.value.append(a)
+    b = build_m(x[1:], seen)
+    if(b != None):
+        c.value.append(b)
     return newcon
 
 # im not 100% sure on this
 def build_m(x, seen):
+    if(x == []):
+        return
     if(not(isinstance(x,list)) and not(isinstance(x,tuple))):
         return x
     temp = [None]

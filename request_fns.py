@@ -7,5 +7,6 @@ def add_con(concept, fillers=[], equivalences=[], markers=[]):
         markers = eval(newcon)
     else:
         Global.c_list = Global.c_list.insert(0, newcon)
-        print("Adding" + newcon + "=" + newcon.value)
+        currentcon = Global.find_class(newcon)
+        print("Adding " + newcon + " = ", currentcon.value)
     return newcon

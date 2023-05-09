@@ -7,7 +7,10 @@ pmsg_flags = True
 
 
 def new_con():
-    pass
+    Global.uniqueid = Global.uniqueid + 1
+    request = "CON"+ str(Global.uniqueid)
+    Global.all_cons.insert(0, request)
+    return Global.all_cons[0]
 
 
 def new_lex(word):

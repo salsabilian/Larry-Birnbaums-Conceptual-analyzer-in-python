@@ -270,7 +270,6 @@ def consider_latest_requests():
 def collect_vars1(form,bindings = []):
   str = "crash_dic.bindings_" + Global.word + "()"
   bindings = eval(str)
-  print(bindings)
   return bindings
   
 
@@ -349,7 +348,7 @@ def consider(request,pool): #not sure on this entire function
     #for clause in body: # this didnt work anyway in the original code
     res, tstbindings = eval_test(request, body, bindings)
     if res:
-      macros.pmsg(request, "has fired")
+      macros.pmsg(request, "has fired", "\n")
       globals()[request].active = None
       eval_actions(request, body, tstbindings, pool)
     if Global.active.get(request, []) == []:

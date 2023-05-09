@@ -14,6 +14,8 @@ class dic_word:
 class req:
     tracep = None
     bindings = None
+class con:
+    value = []
 a = dic_word()
 # Added variable to keep track of attribute property
 atts = {}
@@ -187,3 +189,7 @@ def remove_pool_reqs(pool, value):
 
 def find_class(class_name):
     return globals()[class_name]
+
+def create_con(con_name):
+    globals()[con_name] = con()
+    return con_name
