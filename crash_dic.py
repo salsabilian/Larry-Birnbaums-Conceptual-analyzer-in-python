@@ -1,5 +1,6 @@
 import Global
 import concept_fns
+import request_fns
 
 
 def dic_a(art = "art"): #this is my best version so far may need to tweak later but follows his Test Action format and easyish to read
@@ -11,7 +12,7 @@ def dic_a(art = "art"): #this is my best version so far may need to tweak later 
 def actions_a():
     wd = Global.find_class("a")
     wd.str1 = concept_fns.build_con(["indef"], [], [])
-    activate(["request", "clause(test cond_a(str2))", "actions(actions_a_1(str1, str2))"])
+    request_fns.activate(["request", "clause(test cond_a(str2))", "actions(actions_a_1(str1, str2))"])
 
 def cond_a():
     if(if_find(feature(c, ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):

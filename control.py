@@ -399,7 +399,7 @@ def gen_request(R, wd, bindings=[]):
     R = R[1:]
   val = clausify(R)
   globals()[reqsym].body = val
-  globals()[reqsym].wd = wd
+  globals()[reqsym].word = wd
   globals()[reqsym].bindings= bindings #this is a list maybe should be a dictionary?
   #removing form loop stuff for now if needed will come back
   #for form in R:
@@ -438,5 +438,3 @@ def consider_lexical_requests():
     else:
         # macros.pmsg("No lexical reqs. Moving to consider all requests.")
         consider_all_requests()
-
-CA('(a small twin-engine plane stuffed with marijuana crashed south of here yesterday)')

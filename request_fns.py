@@ -1,5 +1,6 @@
 import concept_fns
 import Global
+import control
 
 def add_con(concept, fillers=[], equivalences=[], markers=[]):
     newcon = concept_fns.build_cd(concept, fillers, equivalences)
@@ -10,3 +11,11 @@ def add_con(concept, fillers=[], equivalences=[], markers=[]):
         currentcon = Global.find_class(newcon)
         print("Adding " + newcon + " = ", currentcon.value)
     return newcon
+
+def activate(reqs):
+    activate1(reqs)
+
+def activate1(reqs):
+    w = Global.find_class(Global.current_req)
+    print(Global.bindings)
+    newreqs = control.make_requests(w.word, reqs, Global.bindings)
