@@ -23,7 +23,9 @@ def actions_a():
     request_fns.activate([["request", "clause(test crash_dic.cond_a())", "actions(actions_a_1())"]]) # we want it as one request
 
 def cond_a():
-    if(if_find(feature(c, ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
+    # getting the latest con should be the first all_cons
+    request_fns.feature(Global.all_cons[0], ['loc', 'pp'])
+    if(if_find(request_fns.feature(Global.all_cons[0], ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
         wd = Global.find_class("a")
         wd.str2 = True
         new_bind = ["str2", wd.str2]

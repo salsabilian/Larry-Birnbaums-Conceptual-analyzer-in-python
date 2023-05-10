@@ -37,3 +37,13 @@ def activate1(reqs):
             Global.set_pool_reqs(pool, [r,p])
             p = Global.pool_reqs(pool)
     control.activate_pool(pool)
+
+def feature(obj, pred):
+    if(isinstance(pred, list)):
+            return any(feature(obj, p) for p in pred)
+    # ((and (symbolp pred) (get pred :expr)) these always seem to come back as nil
+    # (apply pred (list obj)))
+    con = Global.find_class(obj).value
+    if con == 'concept':
+        concept_p(obj)
+
