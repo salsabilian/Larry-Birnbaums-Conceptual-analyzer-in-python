@@ -37,7 +37,7 @@ def get_role_filler(path, concept):
     if(path == None):
         return concept
     elif(isinstance(path, str)): # if we dont have a list of paths (not sure if we need isidentifier)
-        con = atom_eval(concept)
+        con = Global.find_class(concept).value
         if(isinstance(con, list) or isinstance(con, tuple)):
             return next((i for i,v in enumerate(con[1:]) if v[0] == path), None) # this searches through the tuples finds the one whose index 0 matches the path and returns its index 1
     elif(isinstance(path, tuple)):
