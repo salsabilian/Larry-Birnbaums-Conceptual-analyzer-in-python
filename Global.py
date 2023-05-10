@@ -197,3 +197,7 @@ def create_con(con_name):
 def create_req(req_name):
     r = globals()[req_name] = req()
     return r
+
+def create_pool(pool_name):
+    globals()[pool_name] = []
+    return pool_name

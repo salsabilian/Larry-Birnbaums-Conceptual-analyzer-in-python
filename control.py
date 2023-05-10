@@ -220,9 +220,8 @@ def consider_pool(pool):
 
 def consider_all_requests():
   if Global.request_pools:
-    for pool in Global.request_pools:
-      if consider_pool(pool).any():
-        break
+    while any(consider_pool(pool) for pool in Global.request_pools):
+      pass
 
 
 
@@ -326,9 +325,9 @@ def eval_actions(req, cl, bindings, pool):
   bvars = bindings_as_letvars(bindings)
   act_vars = collect_vars([act_list], bindings)
   
-  bindings = bdgs
-  current_req = req
-  current_pool = pool
+  Global.bindings = bdgs
+  Global.current_req = req
+  Global.current_pool = pool
   
   return eval(act_list)
 
@@ -375,7 +374,12 @@ def skip_next_word():
 #FILL CODE HERE
 def build_pool(wd, new_requests):
   pool = macros.new_pool(wd)
-  Global.set_pool_reqs(pool, new_requests)
+  p = Global.create_pool(pool)
+  for req in new_requests:
+    if(Global.pool_reqs(p)):
+      Global.set_pool_reqs(p, [req, Global.pool_reqs(p)])
+    else:
+      Global.set_pool_reqs(p, [req])
   return pool
 
 #FILL CODE HERE

@@ -20,16 +20,30 @@ def actions_a():
             Global.bindings[idx] = new_bind
             break
         idx=idx+1
-    request_fns.activate([["request", "clause(test cond_a(str2))", "actions(actions_a_1(str1, str2))"]]) # we want it as one request
+    request_fns.activate([["request", "clause(test crash_dic.cond_a())", "actions(actions_a_1())"]]) # we want it as one request
 
 def cond_a():
     if(if_find(feature(c, ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
         wd = Global.find_class("a")
         wd.str2 = True
-        return True
+        new_bind = ["str2", wd.str2]
+        idx = 0
+        while(idx < len(Global.bindings)):
+            if Global.bindings[idx] == "str2":
+                Global.bindings[idx] = new_bind
+                break
+            idx=idx+1
+            return True
     else:
         wd = Global.find_class("a")
         wd.str2 = False
+        new_bind = ["str2", wd.str2]
+        idx = 0
+        while(idx < len(Global.bindings)):
+            if Global.bindings[idx] == "str2":
+                Global.bindings[idx] = new_bind
+                break
+            idx=idx+1
         return False
 
 def actions_a_1():
@@ -103,8 +117,8 @@ def twin_engine(adj):
     return req, atts
 
 def actions_twin_engine():
-    wd = Global.find_class("twin engine")
-    wd.str1 = concept_fns.build_con(["PP", Global.class, (group)], [Global.number, ])
+    wd = Global.find_class("twin_engine")
+    wd.str1 = concept_fns.build_con(["PP", ":class", ["group"], ":number", ["num", "number", ["2"]], ":member", ["PP", ":class", ["structure"], ":type", ["engine"]]])
 
 def plane (noun):
     req = [True, "build_con([*PP*, Global.class, (vehicle), Global.type, (airplane)]"]
