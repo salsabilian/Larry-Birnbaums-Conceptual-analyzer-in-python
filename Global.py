@@ -17,6 +17,7 @@ class req:
 class con:
     value = []
 a = dic_word()
+small = dic_word()
 # Added variable to keep track of attribute property
 atts = {}
 # Added variable to keep track of active property
@@ -177,6 +178,9 @@ def init_ca_vars():
     req, atts = crash_dic.dic_a()
     a.atts = atts
     a.requests = [req]
+    req, atts = crash_dic.dic_small()
+    small.atts = atts
+    small.requests = [req]
 
 def pool_reqs(pool):
     return globals()[pool]

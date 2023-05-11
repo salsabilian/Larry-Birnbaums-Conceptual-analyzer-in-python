@@ -48,10 +48,10 @@ def check_end_np():
 
 def check_begin_np():
   if(not Global.flagon("noun_group_flag")):
-    Global.n_p_records = begin_noun_phrase(Global.next_word)
+    Global.n_p_records = begin_noun_phrase(Global.next_word())
     Global.add_flag("noun_group_flag")
     if Global.changed_cons:
-      macros.pmsg("Begin noun group:")
+      print("Begin noun group:")
 
 
 def get_next_item():
@@ -116,15 +116,15 @@ def init_ca():
   if(Global.next_word() == '*'):
     Global.add_flag("change_trace_flag")
     Global.sentence = Global.sentence[1:]
-  begin_noun_phrase(Global.next_word)
+  begin_noun_phrase(Global.next_word())
 
 
-def begin_noun_phrase(word=Global.next_word):
+def begin_noun_phrase(word=Global.next_word()):
   np_req = find_pos_req(word, ['adj', 'arg', 'name', 'noun', 'num', 'poss', 'title1'])
   n_p_record = np_req
   if n_p_record:
     Global.add_flag("noun_group_flag")
-    macros.pmsg("Begin noun group:")
+    print("Begin noun group:")
   return np_req
 
 
@@ -142,9 +142,9 @@ def put_first(req, pool):
 
 
 def find_pos_req(lex, poslist):
-  atts = Global.atts.get(lex, [])
-  for x in poslist:
-    if x in atts:
+  atts = Global.find_class(lex).atts
+  for x in atts:
+    if x not in poslist:
       atts.remove(x)
   return atts
 
@@ -337,6 +337,7 @@ def eval_actions(req, cl, bindings, pool):
 
 def consider(request,pool): #not sure on this entire function
   Global.new_con = []
+  print(request)
   req = Global.find_class(request)
   body = req.body
   tracep =  req.tracep
@@ -357,6 +358,7 @@ def consider(request,pool): #not sure on this entire function
          req.active = True
       return True
     else:
+      print("Should be here")
       return False
 
 
@@ -377,7 +379,7 @@ def build_pool(wd, new_requests):
   p = Global.create_pool(pool)
   for req in new_requests:
     if(Global.pool_reqs(p)):
-      Global.set_pool_reqs(p, [req, Global.pool_reqs(p)])
+      Global.set_pool_reqs(p, Global.pool_reqs(p).insert(0, req))
     else:
       Global.set_pool_reqs(p, [req])
   return pool

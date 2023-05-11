@@ -1,4 +1,5 @@
 import Global
+import concept_fns
 
 def c_head(x):
     form =  Global.find_class(x).value
@@ -20,15 +21,18 @@ def has_type(c, typ):
     if head == typ:
         return True
     elif head.get("type", False) and group(c):
-        member = get_role_filler("member", c)
+        member = concept_fns.get_role_filler("member", c)
         has_type(member, typ)
     return False
 
 def group(x):
-    if x.get("class") == ["group"]:
-        return True
-    else:
+    if(isinstance(x, list)):
+        for i in x:
+            if(isinstance(i, tuple)):
+                if i.get("class", False) == ["group"]:
+                    return True
         return False
+    return x == ["group"]
 
 def script(x):
     h = c_head(x)
@@ -36,3 +40,8 @@ def script(x):
         return True
     else:
         return False
+
+
+def c_prop(x, prop):
+    target = Global.get_role_filler(prop, x)
+    return Global.find_class(target).value
