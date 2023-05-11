@@ -18,6 +18,7 @@ class con:
     value = []
 a = dic_word()
 small = dic_word()
+twin_engine = dic_word()
 # Added variable to keep track of attribute property
 atts = {}
 # Added variable to keep track of active property
@@ -91,7 +92,10 @@ defined_words = []
 # (defmacro NEXT-WORD () `(car SENTENCE))
 def next_word():
     if(sentence):
-        return sentence[0]
+        if(sentence[0] == "twin-engine"):
+            return "twin_engine"
+        else:
+            return sentence[0]
     else:
         return None
 
@@ -181,6 +185,9 @@ def init_ca_vars():
     req, atts = crash_dic.dic_small()
     small.atts = atts
     small.requests = [req]
+    req, atts = crash_dic.dic_twin_engine()
+    twin_engine.atts = atts
+    twin_engine.requests = [req]
 
 def pool_reqs(pool):
     return globals()[pool]

@@ -40,8 +40,7 @@ def CA(in_=[]):
     word = get_next_item()
 
 def check_end_np():
-  if(Global.flagon("noun_group_flag")):
-    end_noun_phrase()
+  if(Global.flagon("noun_group_flag") and end_noun_phrase()):
     Global.remove_flag("noun_group_flag")
     macros.pmsg( "End of noun group")
 
@@ -158,11 +157,11 @@ def get_pos(req):
 
 def end_noun_phrase():
   atts = begin_noun_phrase(Global.next_word())
-  if(atts and (("art" in Global.atts and not Global.n_p_record) or
-               ("adj" in Global.atts and "num" in Global.atts and not("noun" in Global.n_p_record) and not("title" in Global.n_p_record) and not("name" in Global.n_p_record)) or
-               ("title" in Global.atts and "noun" in Global.atts and not("name" in Global.n_p_record)) or
-               ("name" in Global.atts and not("noun" in Global.n_p_record)))):
-    Global.n_p_record = Global.atts + list(set(Global.n_p_record) - set(Global.atts)) # not sure about this got it from here: https://stackoverflow.com/questions/1319338/combining-two-lists-and-removing-duplicates-without-removing-duplicates-in-orig
+  if(atts and (("art" in atts and not Global.n_p_record) or
+               (("adj" in atts or "num" in atts) and (not("noun" in Global.n_p_record) or not("title" in Global.n_p_record) or not("name" in Global.n_p_record)) or
+               ("title" in atts or "noun" in atts and not("name" in Global.n_p_record)) or
+               ("name" in atts and not("noun" in Global.n_p_record))))):
+    Global.n_p_record = list(set(atts) | set(Global.n_p_records))
     return False
   else:
     Global.n_p_record = []
@@ -172,19 +171,21 @@ def end_noun_phrase():
 
 def clean_up_request_pools():
   clean_up_special_pools()
+  temp = []
   for p in Global.request_pools:
     if(live_reqs(p)):
-      Global.request_pools.append(p)
+      temp.append(p)
+  Global.request_pools = temp
 
 
 def live_reqs(pool):
   for r in Global.pool_reqs(pool):
-    if(r in Global.find_class(Global.word).active):
+    if(Global.find_class(r).active):
       return True
     
 def save_live_reqs(pool):
   for r in Global.pool_reqs(pool):
-    if not(r in Global.find_class(Global.word).active):
+    if not(Global.find_class(r).active):
       Global.remove_pool_reqs(pool, r)
 
 
@@ -328,7 +329,6 @@ def eval_actions(req, cl, bindings, pool):
   Global.bindings = bdgs
   Global.current_req = req
   Global.current_pool = pool
-  
   return eval(act_list)
 
   
@@ -337,7 +337,6 @@ def eval_actions(req, cl, bindings, pool):
 
 def consider(request,pool): #not sure on this entire function
   Global.new_con = []
-  print(request)
   req = Global.find_class(request)
   body = req.body
   tracep =  req.tracep
@@ -358,7 +357,6 @@ def consider(request,pool): #not sure on this entire function
          req.active = True
       return True
     else:
-      print("Should be here")
       return False
 
 

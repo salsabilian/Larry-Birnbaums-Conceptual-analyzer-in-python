@@ -35,7 +35,8 @@ def activate1(reqs):
     if(Global.current_pool): #not 100% here
         p = Global.pool_reqs(pool)
         for r in newreqs:
-            Global.set_pool_reqs(pool, p.insert(0, r))
+            p.insert(0, r)
+            Global.set_pool_reqs(pool, p)
             p = Global.pool_reqs(pool)
     control.activate_pool(pool)
 

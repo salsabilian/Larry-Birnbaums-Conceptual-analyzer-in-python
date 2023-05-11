@@ -123,7 +123,7 @@ def actions_small_1():
 def bindings_small():
     return ["str1", "str2"]
 
-def twin_engine(adj):
+def dic_twin_engine(adj = ["adj"]):
     req = [True,
            "str1=build_con([*PP*, Global.class, (group)], [Global.number, (*num* number(*2*))], [Global.member, [*PP*, Global.class, (structure), Global.type, (engine)]]",
            "activate(req(str2=(request_fns.if_find(feature c [pp]) and request_fns.follows(c, str1)))",
