@@ -15,7 +15,7 @@ class req:
     tracep = None
     bindings = None
 class con:
-    value = []
+    value = None
 a = dic_word()
 small = dic_word()
 twin_engine = dic_word()
@@ -202,7 +202,7 @@ def find_class(class_name):
     return globals()[class_name]
 
 def create_con(con_name):
-    globals()[con_name] = con()
+    c = globals()[con_name] = con()
     return con_name
 
 def create_req(req_name):

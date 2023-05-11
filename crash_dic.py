@@ -83,7 +83,7 @@ def bindings_the():
     return ["str1", "str2"]
 
 def dic_small(adj = ["adj"]):
-    req = req = ["request", "clause(test True)", "(actions(crash_dic.actions_small())"]
+    req = ["request", "clause(test True)", "(actions(crash_dic.actions_small())"]
     atts = adj
     return req, atts
 

@@ -86,11 +86,14 @@ def build_c(x, seen):
         return seen[1]
     newcon = macros.new_con()
     Global.create_con(newcon)
-    seen = seen.insert(0, newcon)
+    seen.insert(0, newcon)
     c = Global.find_class(newcon)
     a = build_m(x[0], seen)
     if(a != None): #done to prevent none values from being added to the con
-        c.value.append(a)
+        if(c.value == None):
+            c.value = [a]
+        else:
+            c.value.append(a)
     b = build_m(x[1:], seen)
     if(b != None):
         c.value.append(b)

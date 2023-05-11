@@ -202,7 +202,6 @@ def consider_lexical_requests():
 
 def consider_requests():
   if Global.flagon("noun_group_flag"):
-    macros.pmsg("Considering latest requests:")
     consider_latest_requests()
   else:
     consider_all_requests()
@@ -230,10 +229,15 @@ def consider_latest_requests():
  #latest_pool = Global.request_pools[0]
  older_pools = Global.request_pools[1:]
  #latest_pool = ldiff(Global.request_pools, older_pools[1:])
- latest_pools = list (set(Global.request_pools).symmetric_difference.set(older_pools[1:]))
- while any(map(consider_pool, latest_pools)):
+ while any(consider_pool(pool) for pool in ldiff(Global.request_pools, older_pools[1:])):
    macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
 
+def ldiff(request_pools, older_pools):
+  temp = []
+  for pool in request_pools:
+    if(pool not in older_pools):
+      temp.append(pool)
+  return temp
 
 #def collect_vars1(form, bindings = []): #parse the strings for := and find variables
 #  if not isinstance(form, list) and not isinstance(form, tuple): #if its not a list something is deeply wrong
