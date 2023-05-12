@@ -230,7 +230,7 @@ def consider_latest_requests():
  older_pools = Global.request_pools[1:]
  #latest_pool = ldiff(Global.request_pools, older_pools[1:])
  while any(consider_pool(pool) for pool in ldiff(Global.request_pools, older_pools[1:])):
-   macros.pmsg("CONSIDER-LATEST-REQUESTS latest pools:")
+   pass
 
 def ldiff(request_pools, older_pools):
   temp = []

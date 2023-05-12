@@ -90,7 +90,7 @@ def dic_small(adj = ["adj"]):
 def actions_small():
     wd = Global.find_class("small")
     wd.str1 = concept_fns.build_con(["*ltnorm*"], [], [])
-    request_fns.activate([["request", "clause(test cond_small())", "actions(actions_small_1())"]])
+    request_fns.activate([["request", "clause(test crash_dic.cond_small())", "actions(actions_small_1())"]])
 
 def cond_small():
     if request_fns.if_find(request_fns.feature(Global.all_cons[0], ['pp'])):
