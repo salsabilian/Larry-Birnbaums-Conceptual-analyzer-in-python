@@ -48,9 +48,10 @@ def check_end_np():
 def check_begin_np():
   if(not Global.flagon("noun_group_flag")):
     Global.n_p_records = begin_noun_phrase(Global.next_word())
-    Global.add_flag("noun_group_flag")
-    if Global.changed_cons:
-      print("Begin noun group:")
+    if(Global.n_p_records):
+      Global.add_flag("noun_group_flag")
+      if Global.changed_cons:
+        print("Begin noun group;")
 
 
 def get_next_item():
@@ -59,6 +60,8 @@ def get_next_item():
     Global.remove_flag("change_trace_flag")
   if(Global.sentence):
     Global.word = Global.sentence.pop(0)
+    if(Global.word == "twin-engine"):
+      Global.word = "twin_engine"
   else:
     return None
   if(Global.next_word() == '*'):
@@ -339,7 +342,7 @@ def eval_actions(req, cl, bindings, pool):
 
 
 
-def consider(request,pool): #not sure on this entire function
+def consider(request,pool):
   Global.new_con = []
   req = Global.find_class(request)
   body = req.body

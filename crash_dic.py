@@ -124,19 +124,19 @@ def bindings_small():
     return ["str1", "str2"]
 
 def dic_twin_engine(adj = ["adj"]):
-    req = [True,
-           "str1=build_con([*PP*, Global.class, (group)], [Global.number, (*num* number(*2*))], [Global.member, [*PP*, Global.class, (structure), Global.type, (engine)]]",
-           "activate(req(str2=(request_fns.if_find(feature c [pp]) and request_fns.follows(c, str1)))",
-           "fill_gap(Global.has_part,str2,str1)"]
+    req = ["request", "clause(test True)", "(actions(crash_dic.actions_twin_engine())"]
     atts = adj
     return req, atts
 
+def bindings_twin_engine():
+    return ["str1", "str2"]
+
 def actions_twin_engine():
     wd = Global.find_class("twin_engine")
-    wd.str1 = concept_fns.build_con(["PP", {"class" : "group"}, {"number" : ["num", "number", ["2"]]}, {"member" : ["PP", {"class" : ["structure", {"type" : "engine"}]}]}])
+    wd.str1 = concept_fns.build_con(["PP", {"class" : ["group"]}, {"number" : ["num", "number", ["2"]]}, {"member" : ["PP", {"class" : ["structure", {"type" : "engine"}]}]}])
 
-def plane (noun):
-    req = [True, "build_con([*PP*, Global.class, (vehicle), Global.type, (airplane)]"]
+def dic_plane (noun = ["noun"]):
+    req = [True, "build_con([*PP*, {class: [vehicle]}, {type [airplane]}]"]
     atts = noun
     return req, atts
 

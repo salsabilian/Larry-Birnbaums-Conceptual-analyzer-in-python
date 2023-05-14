@@ -19,6 +19,7 @@ class con:
 a = dic_word()
 small = dic_word()
 twin_engine = dic_word()
+plane = dic_word()
 # Added variable to keep track of attribute property
 atts = {}
 # Added variable to keep track of active property
@@ -188,6 +189,9 @@ def init_ca_vars():
     req, atts = crash_dic.dic_twin_engine()
     twin_engine.atts = atts
     twin_engine.requests = [req]
+    req, atts = crash_dic.dic_plane()
+    plane.atts = atts
+    plane.reqs = [req]
 
 def pool_reqs(pool):
     return globals()[pool]
