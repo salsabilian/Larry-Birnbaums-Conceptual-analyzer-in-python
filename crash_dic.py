@@ -133,7 +133,7 @@ def bindings_twin_engine():
 
 def actions_twin_engine():
     wd = Global.find_class("twin_engine")
-    wd.str1 = concept_fns.build_con(["PP", {"class" : ["group"]}, {"number" : ["num", "number", ["2"]]}, {"member" : ["PP", {"class" : ["structure", {"type" : "engine"}]}]}])
+    wd.str1 = concept_fns.build_con(["*PP*", ":class", ["group"], ":number", ["num", "number", ["2"]], ":member", ["*PP*", ":class", ["structure", ":type", "engine"]]])
 
 def dic_plane (noun = ["noun"]):
     req = [True, "build_con([*PP*, {class: [vehicle]}, {type [airplane]}]"]

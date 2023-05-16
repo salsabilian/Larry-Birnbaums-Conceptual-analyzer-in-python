@@ -78,43 +78,48 @@ def make_cd(x):
         Global.changed_cons.insert(0, con)
     return con
 
-# unsure about the appending newcon in seen
 def build_c(x, seen):
-    if(not(isinstance(x, list)) and not(isinstance(x,tuple))): # equivalent of checking to see if its an atom
+    if(not(isinstance(x, list))):
         return x
-    if(x == ["previous"]):
+    if(x == ['previous']):
         return seen[1]
     newcon = macros.new_con()
     Global.create_con(newcon)
     seen.insert(0, newcon)
     c = Global.find_class(newcon)
     a = build_m(x[0], seen)
-    if(a != None): #done to prevent none values from being added to the con
+    if(a != None):
         if(c.value == None):
             c.value = [a]
         else:
-            c.value.append(a)
+            if(isinstance(a, list)):
+                c.value = c.value + a
+            else:
+                c.value.append(a)
     b = build_m(x[1:], seen)
     if(b != None):
-        c.value.append(b)
+        if(isinstance(b, list)):
+            c.value = c.value + b
+        else:
+            c.value.append(b)
     return newcon
 
-# im not 100% sure on this
 def build_m(x, seen):
     if(x == []):
-        return
-    if(not(isinstance(x,list)) and not(isinstance(x,tuple))):
         return x
-    temp = [None]
+    if(not(isinstance(x, list))):
+        return x
+    temp = []
     while(1):
-        temp = temp + [x[0]].extend(build_c(x[1], seen))
+        if(x == []):
+            return temp
+        temp.append(x[0])
+        temp.append(build_c(x[1], seen))
         if(x[2:] == None):
             return temp[1:]
-        x = x[2:] # I think we need to do this because of  (setq x (cddr x))) inside cond
-        if(x[1:] == None): # this would be cdr technically this would be the original x[3] (I think is an insurance that the temp line coming next doesnt break)
-            print("Error: Bad Modifier list")
-            print(*x)
-            exit() # we crashed
+        x = x[2:]
+        if(x[1:] == None):
+            print("Bad Modifier list")
     return temp[1:]
 
 def subst_cd(new_c, old_c, cd):
