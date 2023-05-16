@@ -133,7 +133,36 @@ def bindings_twin_engine():
 
 def actions_twin_engine():
     wd = Global.find_class("twin_engine")
-    wd.str1 = concept_fns.build_con(["*PP*", ":class", ["group"], ":number", ["num", "number", ["2"]], ":member", ["*PP*", ":class", ["structure", ":type", "engine"]]])
+    wd.str1 = concept_fns.build_con(["*PP*", ":class", ["group"], ":number", ["num", "number", ["2"]], ":member", ["*PP*", ":class", ["structure", ":type", ["engine"]]]])
+    request_fns.activate([["request", "clause(test crash_dic.cond_twin_engine())", "actions(actions_twin_engine_1())"]])
+
+def cond_twin_engine():
+    wd = Global.find_class("twin_engine")
+    if request_fns.if_find(request_fns.feature(Global.all_cons[0], ['pp']) and follows(Global.all_cons[0], wd.str1)):
+        wd.str2 = True
+        new_bind = ["str2", wd.str2]
+        idx = 0
+        while(idx < len(Global.bindings)):
+            if Global.bindings[idx] == "str2":
+                Global.bindings[idx] = new_bind
+                break
+            idx=idx+1
+        return True
+    else:
+        wd = Global.find_class("twin_engine")
+        wd.str2 = False
+        new_bind = ["str2", wd.str2]
+        idx = 0
+    while(idx < len(Global.bindings)):
+        if Global.bindings[idx] == "str2":
+            Global.bindings[idx] = new_bind
+            break
+        idx=idx+1
+    return False
+
+def actions_twin_engine_1():
+    wd = Global.find_class("twin_engine")
+    request_fns.fill_gap(":has-part", wd.str2, wd.str1)
 
 def dic_plane (noun = ["noun"]):
     req = [True, "build_con([*PP*, {class: [vehicle]}, {type [airplane]}]"]
