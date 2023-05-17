@@ -23,8 +23,8 @@ def actions_a():
     request_fns.activate([["request", "clause(test crash_dic.cond_a())", "actions(actions_a_1())"]]) # we want it as one request
 
 def cond_a():
-    # getting the latest con should be the first all_cons
-    if(request_fns.if_find(request_fns.feature(Global.all_cons[0], ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
+    # getting the latest con should be the first c_list
+    if(request_fns.if_find(request_fns.feature(Global.c_list[0], ['loc', 'pp'])) and not Global.flagon("noun_group_flag")):
         wd = Global.find_class("a")
         wd.str2 = True
         new_bind = ["str2", wd.str2]
@@ -90,10 +90,10 @@ def dic_small(adj = ["adj"]):
 def actions_small():
     wd = Global.find_class("small")
     wd.str1 = concept_fns.build_con(["*ltnorm*"], [], [])
-    request_fns.activate([["request", "clause(test crash_dic.cond_small())", "actions(actions_small_1())"]])
+    request_fns.activate([["request", "clause(test crash_dic.cond_small())", "actions(crash_dic.actions_small_1())"]])
 
 def cond_small():
-    if request_fns.if_find(request_fns.feature(Global.all_cons[0], ['pp'])):
+    if request_fns.if_find(request_fns.feature(Global.c_list[0], ['*PP*'])):
         wd = Global.find_class("small")
         wd.str2 = True
         new_bind = ["str2", wd.str2]
@@ -118,7 +118,7 @@ def cond_small():
 
 def actions_small_1():
     wd = Global.find_class("small")
-    fill_gap(":ref", wd.str2, wd.str1)
+    fill_gap(":size", wd.str2, wd.str1)
 
 def bindings_small():
     return ["str1", "str2"]
@@ -138,7 +138,7 @@ def actions_twin_engine():
 
 def cond_twin_engine():
     wd = Global.find_class("twin_engine")
-    if request_fns.if_find(request_fns.feature(Global.all_cons[0], ['pp']) and follows(Global.all_cons[0], wd.str1)):
+    if request_fns.if_find(request_fns.feature(Global.c_list[0], ['pp']) and follows(Global.c_list[0], wd.str1)):
         wd.str2 = True
         new_bind = ["str2", wd.str2]
         idx = 0

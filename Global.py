@@ -20,20 +20,6 @@ a = dic_word()
 small = dic_word()
 twin_engine = dic_word()
 plane = dic_word()
-# Added variable to keep track of attribute property
-atts = {}
-# Added variable to keep track of active property
-active = {}
-# Added variable to keep track of body
-body = {}
-# Added variable to keep track of trace
-trace = {}
-# added variable to keep track of requests
-requests = {}
-# Added variable to keep track of reqsym
-reqsym = {}
-# Added variable to keep track of word (changed to wd)
-wd = {}
 # unique id counter for requests we could change this later to something more sophisticated if needed
 uniqueid = 0
 # (defparameter CHANGED-CONS nil)
