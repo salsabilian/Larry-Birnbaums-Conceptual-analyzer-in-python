@@ -53,11 +53,10 @@ def set_role_filler(path,concept,filler):
     if(oc):
         subst_cd(nc, oc, concept)
     else:
-        # dont have this (chain_gap oc nc) in preds.lisp (propagage slot change)
         add_gap(path,concept,nc)
-    concept.insert(0, changed_cons)
-    embedded = [ele for key in concept for ele in key]
-    putprop(nc, concept, embedded)
+    Global.changed_cons.insert(0, concept)
+    c = Global.find_class(concept)
+    c.embedded = nc
     return concept
 
 # are we sure were returning role instead of con

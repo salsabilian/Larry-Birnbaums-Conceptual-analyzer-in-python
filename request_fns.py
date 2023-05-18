@@ -74,3 +74,21 @@ def if_find(*body):
             break
     return temp
 
+def fill_gap(path, cd, filler):
+    if(path == None or cd == None):
+        if isinstance(path, list):
+            path = list(path)
+        else:
+            return None
+    set_gap(path, cd, filler)
+    print("Inserting", filler, "into", cd, "at", path)
+    if(predicates.concept_p(cd) and precedes(filler, cd)):
+        Global.find_class(cd).contopic = realcon(filler)
+        Global.last_embedded_con = filler
+        Global.find_class(filler).embedded = cd
+    return cd
+
+def set_gap(path, cd, filler):
+    concept_fns.set_role_filler(path,cd,filler)
+
+

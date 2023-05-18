@@ -95,7 +95,7 @@ def actions_small():
 def cond_small():
     if request_fns.if_find(request_fns.feature(Global.c_list[0], ['*PP*'])):
         wd = Global.find_class("small")
-        wd.str2 = True
+        wd.str2 = Global.c_list[0]
         new_bind = ["str2", wd.str2]
         idx = 0
         while(idx < len(Global.bindings)):
@@ -118,7 +118,7 @@ def cond_small():
 
 def actions_small_1():
     wd = Global.find_class("small")
-    fill_gap(":size", wd.str2, wd.str1)
+    request_fns.fill_gap(":size", wd.str2, wd.str1)
 
 def bindings_small():
     return ["str1", "str2"]
