@@ -20,7 +20,7 @@ def has_type(c, typ):
         return any(has_type(c, t1) for t1 in typ)
     if head == typ:
         return True
-    elif head.get("type", False) and group(c):
+    elif head[0] == ":type" and group(c):
         member = concept_fns.get_role_filler("member", c)
         has_type(member, typ)
     return False
