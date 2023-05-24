@@ -33,16 +33,21 @@ def get_role_value(path, concept):
 # get role filler returns the end of the path which its first argument evaluates to within the CD which its second argument evaluates to
 # do we want cons to be a tuple or a list? (tuple is closer to LISP, but was really only needed for car and cadr)
 # correction cons should most likely be a list of tuples
-def get_role_filler(path, concept):
-    if(path == None):
+def get_role_filler(path, concept): # this is just a mess but it works for now :(
+    if path == None and concept == None:
+        return None
+    if(path == None or path == []):
         return concept
-    elif(isinstance(path, str)): # if we dont have a list of paths (not sure if we need isidentifier)
+    if(isinstance(path, str)): # if we dont have a list of paths
         con = concept
         if(isinstance(con, str)):
             con = Global.find_class(concept).value
         if(isinstance(con, list) or isinstance(con, tuple)):
-            val = next((i for i,v in enumerate(con[1:]) if v[0] == path), None) # this searches through the tuples finds the one whose index 0 matches the path and returns its index 1
-    elif(isinstance(path, tuple)):
+            if path not in con:
+                return None
+        return con
+    elif(isinstance(path, list)):
+        role = get_role_filler(path[0], concept)
         return get_role_filler(path[1:], get_role_filler(path[0], concept))
 
 
@@ -63,10 +68,11 @@ def set_role_filler(path,concept,filler):
 def add_gap(path, concept, filler):
     con = get_role_filler(path[:-1], concept)
     role = path[-1]
-    if(not(get_role_filler(role,con)) and con):
-        con = atom_eval(con)
-        con.append(role[0])
+    if(not(get_role_filler(role,con) and con)):
+        con =  Global.find_class(concept).value
+        con.append(role)
         con.append(make_cd(filler))
+        Global.find_class(concept).value = con
         return role
     else:
         return None

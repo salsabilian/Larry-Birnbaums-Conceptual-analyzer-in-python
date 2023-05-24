@@ -118,7 +118,7 @@ def cond_small():
 
 def actions_small_1():
     wd = Global.find_class("small")
-    request_fns.fill_gap(":size", wd.str2, wd.str1)
+    request_fns.fill_gap([":size"], wd.str2, wd.str1)
 
 def bindings_small():
     return ["str1", "str2"]
