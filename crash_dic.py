@@ -165,19 +165,22 @@ def actions_twin_engine_1():
     request_fns.fill_gap(":has-part", wd.str2, wd.str1)
 
 def dic_plane (noun = ["noun"]):
-    req = [True, "build_con([*PP*, {class: [vehicle]}, {type [airplane]}]"]
+    req = ["request", "clause(test True)", "actions(crash_dic.actions_plane())"]
     atts = noun
     return req, atts
 
-def pilot(noun):
-    req = [True, "build_con([*PP*, Global.class, (human), Global.type, (*pilot*)]"]
-    atts = noun
-    return req, atts
+def actions_plane():
+    concept_fns.build_con(["PP", ":class", ["vehicle"], ":type", ["airplane"]])
 
-def stuffed(verb): #definitely wrong, probably will have to rework this entire file
+def bindings_plane():
+    return []
+
+def dic_stuffed(verb = ["verb"]): #definitely wrong, probably will have to rework this entire file
     req = [True,
            "str1=build_con(*do* <=> (*ptrans*), Global.actor(nil), Global.object=(nil), Global.to(*inside* Global.part=(nil), Global.from=(nil), Global.time=(nil))",
            "activate_lexical_reqs(\"with\", req = [Global.word = \"with\", activate_next(req=[str2=request_fns.if_find(feature c \"pp\") and not(feature c 'hi-anim)), fill_gap(Global.rel, str2, str1); concept_fns.subst_cd(str2, (concept_fns.get_role_filler \"(Global.to Global.part) str1) str1))", "else:(request_fns.kill_self)"]
+    atts = verb
+    return req, atts
 
 
 

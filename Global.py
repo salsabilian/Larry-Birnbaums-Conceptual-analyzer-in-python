@@ -20,6 +20,7 @@ a = dic_word()
 small = dic_word()
 twin_engine = dic_word()
 plane = dic_word()
+stuffed = dic_word()
 # unique id counter for requests we could change this later to something more sophisticated if needed
 uniqueid = 0
 # (defparameter CHANGED-CONS nil)
@@ -177,7 +178,10 @@ def init_ca_vars():
     twin_engine.requests = [req]
     req, atts = crash_dic.dic_plane()
     plane.atts = atts
-    plane.reqs = [req]
+    plane.requests = [req]
+    req, atts = crash_dic.dic_stuffed()
+    stuffed.atts = atts
+    stuffed.requests = [req]
 
 def pool_reqs(pool):
     return globals()[pool]

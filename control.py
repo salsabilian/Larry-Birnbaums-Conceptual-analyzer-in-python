@@ -1,5 +1,6 @@
 import Global
 import macros
+import concept_fns
 import crash_dic
 
 # lisp version stored data as a list so modifications needed
@@ -42,7 +43,7 @@ def CA(in_=[]):
 def check_end_np():
   if(Global.flagon("noun_group_flag") and end_noun_phrase()):
     Global.remove_flag("noun_group_flag")
-    macros.pmsg( "End of noun group")
+    print( "End of noun group")
 
 
 def check_begin_np():
