@@ -74,6 +74,9 @@ def if_find(*body):
             break
     return temp
 
+def follows(c1, c2):
+    return c1 != c2 and c1 in Global.c_list and c2 in Global.c_list
+
 def fill_gap(path, cd, filler):
     if(path == None or cd == None):
         if isinstance(path, list):
