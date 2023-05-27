@@ -19,13 +19,13 @@ def actions_a():
             Global.bindings[idx] = new_bind
             break
         idx=idx+1
-    request_fns.activate([["request", "clause(test crash_dic.cond_a())", "actions(actions_a_1())"]]) # we want it as one request
+    request_fns.activate([["request", "clause(test crash_dic.cond_a())", "actions(crash_dic.actions_a_1())"]]) # we want it as one request
 
 def cond_a():
     # getting the latest con should be the first c_list
     if(request_fns.if_find(request_fns.feature(Global.c_list[0], ['loc', '*PP*'])) and not Global.flagon("noun_group_flag")):
         wd = Global.find_class("a")
-        wd.str2 = True
+        wd.str2 = Global.c_list[0]
         new_bind = ["str2", wd.str2]
         idx = 0
         while(idx < len(Global.bindings)):
@@ -33,7 +33,7 @@ def cond_a():
                 Global.bindings[idx] = new_bind
                 break
             idx=idx+1
-            return True
+        return True
     else:
         wd = Global.find_class("a")
         wd.str2 = False
@@ -48,8 +48,8 @@ def cond_a():
 
 def actions_a_1():
     wd = Global.find_class("a")
-    print(wd.str1 + "=" + wd.str2 + "found pp")
-    fill_gap(":ref", wd.str2, wd.str1)
+    print("A = " + wd.str1 + " found pp " + wd.str2 + " = " + wd.str1)
+    request_fns.fill_gap([":ref"], wd.str2, wd.str1)
 
 def bindings_a():
     return ["str1","str2"]

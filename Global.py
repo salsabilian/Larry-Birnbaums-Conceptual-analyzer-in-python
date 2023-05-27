@@ -118,11 +118,13 @@ def remove_flag(flag):
     if(flagon(flag)):
         flags.remove(flag)
     else:
-        print("flag not in flags")
+        return
+
 # (defmacro add-flag (flag)
 #   `(pushnew ,flag *flags*))
 def add_flag(flag):
-    flags.insert(0, flag)
+    if flag not in flags:
+        flags.insert(0, flag)
 
 def add_property(prop, key, val):
     prop[key] = val
