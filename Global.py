@@ -1,26 +1,29 @@
 #globals.lisp
 import crash_dic
 
-#Added variable to keep track of parans
+#This file contains all global variables used throughout the project, any variable that will be used throughout files should be
+#declared and called from here
+
+#Added variable to keep track of parans in input in case there are parans at the start
 parans = 0
-class dic_word:
+class dic_word: #This is the basic class for each word within our system
     extra_requests = None
     tracep = None
     bindings = None
     str1 = None
     str2 = None
     str3 = None
-class req:
+class req: #This is the basic class for each active request
     tracep = None
     bindings = None
-class con:
+class con: #This is the basic class for each concept dependency
     value = None
-a = dic_word()
+a = dic_word()  # These are the current words declared
 small = dic_word()
 twin_engine = dic_word()
 plane = dic_word()
 stuffed = dic_word()
-# unique id counter for requests we could change this later to something more sophisticated if needed
+# unique id counter for requests, pools, and cons we could change this later to something more sophisticated if needed
 uniqueid = 0
 # (defparameter CHANGED-CONS nil)
 changed_cons = []
@@ -77,9 +80,9 @@ defined_words = []
 # ;; (defparameter NEXT-WORD nil)
 
 # (defmacro NEXT-WORD () `(car SENTENCE))
-def next_word():
+def next_word(): #get each new word
     if(sentence):
-        if(sentence[0] == "twin-engine"):
+        if(sentence[0] == "twin-engine"): #if the word is twin-engine make it underscore cause python cant handle underscore
             return "twin_engine"
         else:
             return sentence[0]
@@ -168,8 +171,8 @@ def init_ca_vars():
     changed_cons = []
     # sent = []
     sentence = []
-    req, atts = crash_dic.dic_a()
-    a.atts = atts
+    req, atts = crash_dic.dic_a() #declare the req and atts for each word used to find noun phrases and figure out how the word works
+    a.atts = atts #in a sentence
     a.requests = [req]
     req, atts = crash_dic.dic_small()
     small.atts = atts
@@ -184,26 +187,26 @@ def init_ca_vars():
     stuffed.atts = atts
     stuffed.requests = [req]
 
-def pool_reqs(pool):
+def pool_reqs(pool): #get variables created or declared in this file using a string
     return globals()[pool]
 
-def set_pool_reqs(pool, new_value):
+def set_pool_reqs(pool, new_value): #set values created or declared in this file using a string
     globals()[pool] = new_value
 
-def remove_pool_reqs(pool, value):
+def remove_pool_reqs(pool, value): #remove values created or declared here using a string
     globals()[pool].remove(value)
 
-def find_class(class_name):
+def find_class(class_name): # find the current value of a class declared in this file using a string value
     return globals()[class_name]
 
-def create_con(con_name):
+def create_con(con_name): #create a con class with the name of the string given in this file
     c = globals()[con_name] = con()
     return con_name
 
-def create_req(req_name):
+def create_req(req_name): #create a req class with the name of the file using the string given in this file
     r = globals()[req_name] = req()
     return r
 
-def create_pool(pool_name):
+def create_pool(pool_name): #create a variable in this file using the string given in this file
     globals()[pool_name] = []
     return pool_name
