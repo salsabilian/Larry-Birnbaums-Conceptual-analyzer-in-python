@@ -3,8 +3,9 @@ and was based on the original system English Language Interpreter. Modifications
 2022, Mark Burstein recovered the original code from printouts and converted it to common lisp here: https://github.com/jmacbeth/CA. The purpose of this code repository
 is to convert Mark Bursteins common lisp implementation over to python. 
 
-You can run the program using the command python main.py.
+You can run the program using the command: python main.py.
 The current output is: 
+
 Current Input: ['(a small twin-engine plane stuffed with marijuana crashed south of here yesterday)']
 New Sentence is ['a', 'small', 'twin-engine', 'plane', 'stuffed', 'with', 'marijuana', 'crashed', 'south', 'of', 'here', 'yesterday']
 
