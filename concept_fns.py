@@ -13,11 +13,10 @@ import Global
 # The second and third arguments can be optional
 
 # was originally a macro but no macros in python Add-Con calls build-cd (the function below)
-# originally uses an apostrophe to stop direct evaluation (in lisp) not sure if thats an issue will find out if it crashes
 def build_con(concept, fillers=[], equivalences=[]):
-    return request_fns.add_con(concept, fillers, equivalences)
+    return request_fns.add_con(concept, fillers, equivalences) #add_con creates an initial con than calls build_cd
 
-def build_cd(concept, fillers=[], equivalences=[]):
+def build_cd(concept, fillers=[], equivalences=[]): #creates the cd and adds equivalences and fillers
     con = make_cd(concept)
     for e in equivalences: # lambda(e) equivalences
         subst_cd(get_role_filler(e[0], con), get_role_filler(e[1], con), con) #car = e[0] cadr = e[1]
@@ -25,14 +24,12 @@ def build_cd(concept, fillers=[], equivalences=[]):
         set_role_filler(f[0], con, f[1])
     return con
 
-# get_role_value is like get_role filler but the argument has been atomized
+# get_role_value is like get_role filler but the argument has been atomized, this is not used anyway currently
 # atom-eval is defined in the macros file
 def get_role_value(path, concept):
     return atom_eval(get_role_filler(path, concept))
 
 # get role filler returns the end of the path which its first argument evaluates to within the CD which its second argument evaluates to
-# do we want cons to be a tuple or a list? (tuple is closer to LISP, but was really only needed for car and cadr)
-# correction cons should most likely be a list of tuples
 def get_role_filler(path, concept): # this is just a mess but it works for now :(
     if path == None and concept == None:
         return None
@@ -52,6 +49,7 @@ def get_role_filler(path, concept): # this is just a mess but it works for now :
 
 
 # Not sure about embedded here need to do more research
+#this either substitutes an already existing property tag if it exists in the con or adds a property tag with the value if it does
 def set_role_filler(path,concept,filler):
     nc = make_cd(filler)
     oc = get_role_filler(path,concept)
@@ -64,7 +62,8 @@ def set_role_filler(path,concept,filler):
     c.embedded = nc
     return concept
 
-# are we sure were returning role instead of con
+#adds previous cons with property tags with there names to new cons
+#ex: will add path = :size and filler = con7 to con11 at the end
 def add_gap(path, concept, filler):
     con = get_role_filler(path[:-1], concept)
     role = path[-1]
@@ -77,12 +76,13 @@ def add_gap(path, concept, filler):
     else:
         return None
 
-def make_cd(x):
+def make_cd(x): #creates a con list based on the input x
     con = build_c(x, [])
-    if(x != con):
+    if(x != con): #adds the con to the global changed con list
         Global.changed_cons.insert(0, con)
     return con
 
+#build c and build m recursively call each other to create cons for each list within lists inside x, seen keeps track of all new cons
 def build_c(x, seen):
     if(not(isinstance(x, list))):
         return x
@@ -127,6 +127,7 @@ def build_m(x, seen):
             print("Bad Modifier list")
     return temp[1:]
 
+#none of these bottom 3 functions are currently used
 def subst_cd(new_c, old_c, cd):
     subcdc(new_c, old_c, cd, None)
 
