@@ -3,7 +3,6 @@ import crash_dic
 
 #Added variable to keep track of parans
 parans = 0
-# Might Want to switch to a class based implementation (more dynamic)
 class dic_word:
     extra_requests = None
     tracep = None

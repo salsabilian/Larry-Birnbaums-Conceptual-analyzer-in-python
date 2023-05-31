@@ -3,6 +3,9 @@ import concept_fns
 import control
 import request_fns
 
+#this file contains information where each specific word along with conditionals to determine what the purpose of each word is in
+# regards to each sentence
+# each word has atleast one action and one conditional they will be called using eval in control.py
 
 def dic_a(art = ["art"]): #this is my best version so far may need to tweak later but follows his Test Action format and easyish to read
     req = ["request", "clause(test True)", "(actions(crash_dic.actions_a())"]
