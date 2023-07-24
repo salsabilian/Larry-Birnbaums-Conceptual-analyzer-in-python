@@ -13,11 +13,10 @@ import Global
 # The second and third arguments can be optional
 
 # was originally a macro but no macros in python Add-Con calls build-cd (the function below)
-# originally uses an apostrophe to stop direct evaluation (in lisp) not sure if thats an issue will find out if it crashes
 def build_con(concept, fillers=[], equivalences=[]):
-    return request_fns.add_con(concept, fillers, equivalences)
+    return request_fns.add_con(concept, fillers, equivalences) #add_con creates an initial con than calls build_cd
 
-def build_cd(concept, fillers=[], equivalences=[]):
+def build_cd(concept, fillers=[], equivalences=[]): #creates the cd and adds equivalences and fillers
     con = make_cd(concept)
     for e in equivalences: # lambda(e) equivalences
         subst_cd(get_role_filler(e[0], con), get_role_filler(e[1], con), con) #car = e[0] cadr = e[1]
@@ -25,95 +24,110 @@ def build_cd(concept, fillers=[], equivalences=[]):
         set_role_filler(f[0], con, f[1])
     return con
 
-# get_role_value is like get_role filler but the argument has been atomized
+# get_role_value is like get_role filler but the argument has been atomized, this is not used anyway currently
 # atom-eval is defined in the macros file
 def get_role_value(path, concept):
     return atom_eval(get_role_filler(path, concept))
 
 # get role filler returns the end of the path which its first argument evaluates to within the CD which its second argument evaluates to
-# do we want cons to be a tuple or a list? (tuple is closer to LISP, but was really only needed for car and cadr)
-# correction cons should most likely be a list of tuples
-def get_role_filler(path, concept):
-    if(path == None):
+def get_role_filler(path, concept): # this is just a mess but it works for now :(
+    if path == None and concept == None:
+        return None
+    if(path == None or path == []):
         return concept
-    elif(isinstance(path, str)): # if we dont have a list of paths (not sure if we need isidentifier)
+    if(isinstance(path, str)): # if we dont have a list of paths
         con = concept
         if(isinstance(con, str)):
             con = Global.find_class(concept).value
         if(isinstance(con, list) or isinstance(con, tuple)):
-            val = next((i for i,v in enumerate(con[1:]) if v[0] == path), None) # this searches through the tuples finds the one whose index 0 matches the path and returns its index 1
-    elif(isinstance(path, tuple)):
+            if path not in con:
+                return None
+        return con
+    elif(isinstance(path, list)):
+        role = get_role_filler(path[0], concept)
         return get_role_filler(path[1:], get_role_filler(path[0], concept))
 
 
 # Not sure about embedded here need to do more research
+#this either substitutes an already existing property tag if it exists in the con or adds a property tag with the value if it does
 def set_role_filler(path,concept,filler):
     nc = make_cd(filler)
     oc = get_role_filler(path,concept)
     if(oc):
         subst_cd(nc, oc, concept)
     else:
-        # dont have this (chain_gap oc nc) in preds.lisp (propagage slot change)
         add_gap(path,concept,nc)
-    concept.insert(0, changed_cons)
-    embedded = [ele for key in concept for ele in key]
-    putprop(nc, concept, embedded)
+    Global.changed_cons.insert(0, concept)
+    c = Global.find_class(concept)
+    c.embedded = nc
     return concept
 
-# are we sure were returning role instead of con
+#adds previous cons with property tags with there names to new cons
+#ex: will add path = :size and filler = con7 to con11 at the end
 def add_gap(path, concept, filler):
     con = get_role_filler(path[:-1], concept)
     role = path[-1]
-    if(not(get_role_filler(role,con)) and con):
-        con = atom_eval(con)
-        con.append(role[0])
+    if(not(get_role_filler(role,con) and con)):
+        con =  Global.find_class(concept).value
+        con.append(role)
         con.append(make_cd(filler))
+        Global.find_class(concept).value = con
         return role
     else:
         return None
 
-def make_cd(x):
+def make_cd(x): #creates a con list based on the input x
     con = build_c(x, [])
-    if(x != con):
+    if(x != con): #adds the con to the global changed con list
         Global.changed_cons.insert(0, con)
     return con
 
-# unsure about the appending newcon in seen
+#build c and build m recursively call each other to create cons for each list within lists inside x, seen keeps track of all new cons
 def build_c(x, seen):
-    if(not(isinstance(x, list)) and not(isinstance(x,tuple))): # equivalent of checking to see if its an atom
+    if(not(isinstance(x, list))):
         return x
-    if(x == ["previous"]):
+    if(x == ['previous']):
         return seen[1]
     newcon = macros.new_con()
     Global.create_con(newcon)
-    seen = seen.insert(0, newcon)
+    seen.insert(0, newcon)
     c = Global.find_class(newcon)
     a = build_m(x[0], seen)
-    if(a != None): #done to prevent none values from being added to the con
-        c.value.append(a)
+    if(a != None):
+        if(c.value == None):
+            c.value = [a]
+        else:
+            if(isinstance(a, list)):
+                c.value = c.value + a
+            else:
+                c.value.append(a)
     b = build_m(x[1:], seen)
     if(b != None):
-        c.value.append(b)
+        if(isinstance(b, list)):
+            c.value = c.value + b
+        else:
+            c.value.append(b)
     return newcon
 
-# im not 100% sure on this
 def build_m(x, seen):
     if(x == []):
-        return
-    if(not(isinstance(x,list)) and not(isinstance(x,tuple))):
         return x
-    temp = [None]
+    if(not(isinstance(x, list))):
+        return x
+    temp = []
     while(1):
-        temp = temp + [x[0]].extend(build_c(x[1], seen))
+        if(x == []):
+            return temp
+        temp.append(x[0])
+        temp.append(build_c(x[1], seen))
         if(x[2:] == None):
             return temp[1:]
-        x = x[2:] # I think we need to do this because of  (setq x (cddr x))) inside cond
-        if(x[1:] == None): # this would be cdr technically this would be the original x[3] (I think is an insurance that the temp line coming next doesnt break)
-            print("Error: Bad Modifier list")
-            print(*x)
-            exit() # we crashed
+        x = x[2:]
+        if(x[1:] == None):
+            print("Bad Modifier list")
     return temp[1:]
 
+#none of these bottom 3 functions are currently used
 def subst_cd(new_c, old_c, cd):
     subcdc(new_c, old_c, cd, None)
 

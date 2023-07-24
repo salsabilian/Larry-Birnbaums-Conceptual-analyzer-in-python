@@ -2,6 +2,8 @@ import Global
 import macros
 import utils
 
+#this file is not currently used and can be ignored
+
 # (defmacro def (word . prop-vals)
 #   `(mapc #'(lambda (k-v)
 #                (setf (get ,word (car k-v)) (cdr k-v)))
